@@ -1,0 +1,19 @@
+[Unit]
+Description=Mashoodwear Medusa Iran Pack
+After=network.target postgresql.service redis-server.service
+Wants=postgresql.service redis-server.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/medusa/apps/backend
+EnvironmentFile=/opt/medusa/apps/backend/.env
+Environment=NODE_ENV=production
+# purpose --- use local CLI so PATH/npm shims are not required ---
+ExecStart=/usr/local/bin/node ./node_modules/@medusajs/cli/cli.js start
+Restart=on-failure
+RestartSec=8
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

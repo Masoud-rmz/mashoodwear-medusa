@@ -8,7 +8,7 @@ const COPY = {
   },
   categories: {
     title: "Categories moved to Medusa Admin",
-    body: "Product categories live in Medusa. Use Medusa Admin for category CRUD; this `/admin` panel is CMS-only (pages, home, settings).",
+    body: "Product categories live in Medusa. Use Medusa Admin for category CRUD; this `/cms` panel is CMS-only (pages, home, settings).",
   },
 };
 
@@ -33,7 +33,7 @@ export default function CommerceMovedToMedusaPage({ resource = "products" }) {
         >
           Open Medusa Admin
         </a>
-        <Link to="/admin" className="btn btn-secondary">
+        <Link to="/cms" className="btn btn-secondary">
           Back to CMS dashboard
         </Link>
       </div>

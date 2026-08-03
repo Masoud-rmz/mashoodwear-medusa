@@ -11,7 +11,7 @@ import HomeSettingsPage from "./pages/HomeSettingsPage";
 import SettingsPage from "./pages/SettingsPage";
 
 /**
- * Admin SPA routes under /admin.
+ * Admin SPA routes under /cms.
  * Path A: products/categories CRUD removed; commerce → Medusa Admin only.
  */
 export default function AdminApp() {
@@ -41,7 +41,7 @@ export default function AdminApp() {
           <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Route>
-      <Route path="*" element={<Navigate to="/admin" replace />} />
+      <Route path="*" element={<Navigate to="/cms" replace />} />
     </Routes>
   );
 }

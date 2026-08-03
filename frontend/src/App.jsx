@@ -23,7 +23,7 @@ import OrderDetailPage from "./pages/OrderDetailPage";
 export default function App() {
   return (
     <Routes>
-      <Route path="/admin/*" element={<AdminApp />} />
+      <Route path="/cms/*" element={<AdminApp />} />
       <Route element={<Layout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/collection" element={<Navigate to="/products" replace />} />

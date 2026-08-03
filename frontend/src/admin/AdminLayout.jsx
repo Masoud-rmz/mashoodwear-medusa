@@ -4,11 +4,11 @@ import { clearAdminToken } from "../utils/adminAuth";
 
 /** CMS-only nav — commerce CRUD lives in Medusa Admin (Path A). */
 const NAV = [
-  { to: "/admin", label: "Dashboard", end: true },
-  { to: "/admin/pages", label: "Pages" },
-  { to: "/admin/home", label: "Home" },
-  { to: "/admin/collections", label: "Collections" },
-  { to: "/admin/settings", label: "Settings" },
+  { to: "/cms", label: "Dashboard", end: true },
+  { to: "/cms/pages", label: "Pages" },
+  { to: "/cms/home", label: "Home" },
+  { to: "/cms/collections", label: "Collections" },
+  { to: "/cms/settings", label: "Settings" },
 ];
 
 /**
@@ -19,7 +19,7 @@ export default function AdminLayout() {
 
   const handleLogout = () => {
     clearAdminToken();
-    navigate("/admin/login");
+    navigate("/cms/login");
   };
 
   return (

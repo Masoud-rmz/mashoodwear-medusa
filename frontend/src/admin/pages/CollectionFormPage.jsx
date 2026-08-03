@@ -67,7 +67,7 @@ export default function CollectionFormPage() {
       await adminSaveCollection(isNew ? null : id, formData);
       setToast("Saved");
       if (isNew) {
-        navigate("/admin/collections");
+        navigate("/cms/collections");
       }
     } catch (submitError) {
       setError(submitError.message || "Save failed");
@@ -80,7 +80,7 @@ export default function CollectionFormPage() {
     <form className="admin-form" onSubmit={handleSubmit}>
       <div className="admin-page-header">
         <h1 className="admin-page-title">{isNew ? "Add Collection" : "Edit Collection"}</h1>
-        <Link to="/admin/collections" className="btn btn-secondary">
+        <Link to="/cms/collections" className="btn btn-secondary">
           Cancel
         </Link>
       </div>

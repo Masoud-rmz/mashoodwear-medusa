@@ -6,7 +6,7 @@ import { isAdminAuthenticated } from "../../utils/adminAuth";
  */
 export default function ProtectedRoute() {
   if (!isAdminAuthenticated()) {
-    return <Navigate to="/admin/login" replace />;
+    return <Navigate to="/cms/login" replace />;
   }
   return <Outlet />;
 }

@@ -21,7 +21,7 @@ export default function LoginPage() {
     try {
       const response = await adminLogin(username, password);
       setAdminToken(response.token);
-      navigate("/admin");
+      navigate("/cms");
     } catch {
       setError("Wrong username or password");
     } finally {

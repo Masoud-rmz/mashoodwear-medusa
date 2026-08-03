@@ -28,7 +28,7 @@ export default function CategoriesPage() {
       .then((response) => setItems(response.items))
       .catch((loadError) => {
         if (loadError.message === "session_expired") {
-          navigate("/admin/login");
+          navigate("/cms/login");
           return;
         }
         setError(loadError.message || "Could not load categories");
@@ -62,7 +62,7 @@ export default function CategoriesPage() {
       load();
     } catch (submitError) {
       if (submitError.message === "session_expired") {
-        navigate("/admin/login");
+        navigate("/cms/login");
         return;
       }
       setError(submitError.message || "Save failed");
@@ -89,7 +89,7 @@ export default function CategoriesPage() {
       load();
     } catch (deleteError) {
       if (deleteError.message === "session_expired") {
-        navigate("/admin/login");
+        navigate("/cms/login");
         return;
       }
       setError(deleteError.message || "Delete failed");

@@ -28,7 +28,7 @@ export default function ProductsListPage() {
       })
       .catch((loadError) => {
         if (loadError.message === "session_expired") {
-          navigate("/admin/login");
+          navigate("/cms/login");
           return;
         }
         setError(loadError.message || "Could not load products");
@@ -59,7 +59,7 @@ export default function ProductsListPage() {
       load();
     } catch (deleteError) {
       if (deleteError.message === "session_expired") {
-        navigate("/admin/login");
+        navigate("/cms/login");
         return;
       }
       setError(deleteError.message || "Delete failed");
@@ -74,7 +74,7 @@ export default function ProductsListPage() {
     <div>
       <div className="admin-page-header">
         <h1 className="admin-page-title">Products</h1>
-        <Link to="/admin/products/new" className="btn btn-primary">
+        <Link to="/cms/products/new" className="btn btn-primary">
           Add New Product
         </Link>
       </div>
@@ -118,7 +118,7 @@ export default function ProductsListPage() {
                   <td>{product.status}</td>
                   <td>{product.isFeatured ? "Yes" : "No"}</td>
                   <td className="admin-table-actions">
-                    <Link to={`/admin/products/${product.id}`} className="btn btn-secondary btn-sm">
+                    <Link to={`/cms/products/${product.id}`} className="btn btn-secondary btn-sm">
                       Edit
                     </Link>
                     <a

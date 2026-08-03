@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 import { medusaAdminUrl } from "../../api/medusa/client";
 
 const CMS_LINKS = [
-  { to: "/admin/pages", label: "Pages", hint: "About, Contact, How to Buy" },
-  { to: "/admin/home", label: "Home content", hint: "Hero and brand story" },
-  { to: "/admin/settings", label: "Site settings", hint: "Card transfer, social links, logo, password" },
-  { to: "/admin/collections", label: "CMS collections", hint: "Fallback only — prefer Medusa Admin cover image" },
+  { to: "/cms/pages", label: "Pages", hint: "About, Contact, How to Buy" },
+  { to: "/cms/home", label: "Home content", hint: "Hero and brand story" },
+  { to: "/cms/settings", label: "Site settings", hint: "Card transfer, social links, logo, password" },
+  { to: "/cms/collections", label: "CMS collections", hint: "Fallback only — prefer Medusa Admin cover image" },
 ];
 
 /**

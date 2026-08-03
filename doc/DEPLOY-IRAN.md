@@ -300,10 +300,78 @@ tail -f /var/log/nginx/error.log
 
 | فایل | کاربرد |
 |------|--------|
-| `scripts/deploy-production-iran.sh` | دیپلوی کامل مخصوص ایران |
+| `scripts/deploy-dual-stack-iran.sh` | دیپلوی همزمان UI (`mashoodwear-medusa`) + Medusa Iran Pack |
+| `scripts/deploy-production-iran.sh` | دیپلوی فقط Express قدیمی (legacy) |
+| `scripts/restore-mashoodwear-from-backup.sh` | بازگردانی سایت قبلی از بک‌آپ سرور |
+| `scripts/server-prep-medusa-db.sh` | Postgres/Redis + نقش دیتابیس Medusa |
+| `scripts/medusa-api.service.example` | واحد systemd مدوسا |
+| `scripts/nginx-mashoodwear-medusa.conf.example` | nginx dual-stack |
 | `scripts/install-node20-from-archive.sh` | نصب Node از tarball آپلود شده |
 | `scripts/fix-jsdom-downgrade.sh` | downgrade jsdom و restart API |
 | `scripts/deploy-production.sh` | دیپلوی استاندارد (سرور خارج / Docker) |
+
+---
+
+## ۱۱‑ب. بک‌آپ و rollback (سایت Express فعلی)
+
+بک‌آپ گرفته‌شده روی سرور (نمونه):
+
+```text
+/root/backups/mashoodwear-20260803-201145/
+  mashoodwear-app.tar.gz
+  mashoodwear-db.sql.gz
+  mashoodwear-uploads.tar.gz
+  config/   # .env + nginx + systemd
+  MANIFEST.txt
+```
+
+بازگردانی به نسخهٔ قبلی (روی سرور، به‌عنوان root):
+
+```bash
+bash /root/restore-mashoodwear-from-backup.sh /root/backups/mashoodwear-20260803-201145
+# وقتی پرسید، YES تایپ کن
+```
+
+اسکریپت قبل از overwrite یک safety snapshot در `/root/backups/pre-restore-...` هم می‌سازد.
+
+---
+
+## ۱۱‑ج. جایگزینی با UI جدید (mashoodwear-medusa) — شرط Medusa
+
+سایت جدید UI را دارد ولی **کاتالوگ / سبد / چک‌اوت / پرداخت** از Medusa Iran Pack می‌آید (`:9000`).  
+فقط عوض‌کردن `/opt/mashoodwear` با ریپوی `mashoodwear-medusa` بدون نصب Medusa، فروشگاه را می‌شکند.
+
+### دیپلوی dual-stack (روش اصلی)
+
+```bash
+# 1) آپلود tarball مدوسا به /root/ (اگر ریپوی GitHub مدوسا ندارید)
+# 2) آپلود اسکریپت
+bash /root/deploy-dual-stack-iran.sh mashoodwear.ir
+```
+
+اسکریپت: Postgres/Redis، `/opt/medusa`، migrate+seed، systemd `medusa-api`، سپس cutover به `mashoodwear-medusa` و nginx dual-stack.
+
+| قطعه | مسیر / پورت |
+|------|-------------|
+| Vite UI | `/opt/mashoodwear/frontend/dist` |
+| Brand CMS | UI: `/cms` · API: `/api/` → `:3001` |
+| Medusa | `/store` `/auth` `/admin` `/app` → `:9000` |
+| Rollback | `bash /root/restore-mashoodwear-from-backup.sh /root/backups/mashoodwear-20260803-201145` سپس `systemctl stop medusa-api` |
+
+فقط Medusa بدون cutover UI:
+
+```bash
+SKIP_UI_CUTOVER=1 MEDUSA_TARBALL=/root/medusa-iran-pack-backup-XXXX.tar.gz \
+  bash /root/deploy-dual-stack-iran.sh mashoodwear.ir
+```
+
+حداقل برای go-live کامل:
+
+| قطعه | نقش |
+|------|-----|
+| `mashoodwear-medusa` (Vite + CMS Express) | UI + صفحات برند / lookbook |
+| Medusa Iran Pack (`apps/backend`) | محصولات، سبد، سفارش، پرداخت بانکی ایران |
+| nginx | UI روی دامنه؛ پروکسی `/api` به Express؛ پروکسی Store/Admin به Medusa |
 
 ---
 

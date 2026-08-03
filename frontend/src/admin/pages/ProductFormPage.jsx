@@ -312,13 +312,13 @@ export default function ProductFormPage() {
 
       await adminDeleteProduct(id);
 
-      navigate("/admin/products");
+      navigate("/cms/products");
 
     } catch (deleteError) {
 
       if (deleteError.message === "session_expired") {
 
-        navigate("/admin/login");
+        navigate("/cms/login");
 
         return;
 
@@ -446,7 +446,7 @@ export default function ProductFormPage() {
 
       if (isNew) {
 
-        navigate("/admin/products");
+        navigate("/cms/products");
 
       }
 
@@ -500,7 +500,7 @@ export default function ProductFormPage() {
 
           )}
 
-          <Link to="/admin/products" className="btn btn-secondary">
+          <Link to="/cms/products" className="btn btn-secondary">
 
             Cancel
 

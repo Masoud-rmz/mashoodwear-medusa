@@ -20,7 +20,7 @@ export default function CollectionsListPage() {
       .then((response) => setItems(response.items))
       .catch((loadError) => {
         if (loadError.message === "session_expired") {
-          navigate("/admin/login");
+          navigate("/cms/login");
           return;
         }
         setError(loadError.message || "Could not load collections");
@@ -44,7 +44,7 @@ export default function CollectionsListPage() {
       load();
     } catch (deleteError) {
       if (deleteError.message === "session_expired") {
-        navigate("/admin/login");
+        navigate("/cms/login");
         return;
       }
       setError(deleteError.message || "Delete failed");
@@ -57,7 +57,7 @@ export default function CollectionsListPage() {
     <div>
       <div className="admin-page-header">
         <h1 className="admin-page-title">Collections</h1>
-        <Link to="/admin/collections/new" className="btn btn-primary">
+        <Link to="/cms/collections/new" className="btn btn-primary">
           Add New Collection
         </Link>
       </div>
@@ -83,7 +83,7 @@ export default function CollectionsListPage() {
                 <td>{collection.isActive ? "Yes" : "No"}</td>
                 <td>{collection.displayOrder}</td>
                 <td className="admin-table-actions">
-                  <Link to={`/admin/collections/${collection.id}`} className="btn btn-secondary btn-sm">
+                  <Link to={`/cms/collections/${collection.id}`} className="btn btn-secondary btn-sm">
                     Edit
                   </Link>
                   <a

@@ -67,7 +67,7 @@ export default function SettingsPage() {
     try {
       await adminChangePassword(currentPassword, newPassword);
       clearAdminToken();
-      navigate("/admin/login");
+      navigate("/cms/login");
     } catch {
       setPasswordError("Could not change password");
     }
