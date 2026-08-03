@@ -1,0 +1,16 @@
+[Unit]
+Description=Mashoodwear API (Express)
+After=network.target docker.service
+Wants=docker.service
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/mashoodwear/backend
+EnvironmentFile=/opt/mashoodwear/backend/.env
+ExecStart=/usr/bin/node src/index.js
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,44 @@
+@import "./tokens.css";
+@import "./fonts.css";
+@import "./layout.css";
+@import "./components.css";
+@import "./home.css";
+@import "./products.css";
+@import "./product-detail.css";
+@import "./cms.css";
+@import "./admin.css";
+@import "./cart.css";
+@import "./checkout.css";
+@import "./collections.css";
+@import "./auth.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+#app {
+  min-height: calc(100vh - 64px);
+}

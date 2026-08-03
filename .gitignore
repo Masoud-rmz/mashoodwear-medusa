@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Environment secrets
+.env
+backend/.env
+frontend/.env
+frontend/.env.local
+
+# Build output — run `npm run build` on deploy
+frontend/dist/
+
+# Runtime uploads (seed SVG placeholders are tracked)
+backend/uploads/**
+!backend/uploads/.gitkeep
+!backend/uploads/products/
+backend/uploads/products/*
+!backend/uploads/products/*.svg
+backend/uploads/lookbook/**
+
+# One-way Express → Medusa product export snapshots
+backend/exports/
+
+# Test artifacts
+tests/e2e/test-results/
+tests/e2e/playwright-report/
+playwright/.cache/
+
+# Logs and OS
+*.log
+.DS_Store
+Thumbs.db

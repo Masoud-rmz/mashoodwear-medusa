@@ -1,0 +1,35 @@
+---
+description: Mashhoodwear-Medusa testbed — storage priority, AGENTS.md, handshake log
+alwaysApply: true
+---
+
+# Mashhoodwear × Medusa testbed
+
+This repo is a **Medusa storefront testbed** (mannequin UI). What survives for the next customer is the **API contract + bug list**, not necessarily Mashhoodwear branding.
+
+## Storage priority (chat alone is not enough)
+
+1. `AGENTS.md` — read first every session
+2. This rule (alwaysApply) — workspace defaults
+3. `doc/handshake-learnings.md` — living bug/discovery log (**most important for next UI**)
+4. `doc/PURPOSE.md` + `doc/tasks-medusa.md` — goal + progress
+5. AI learning docs: `C:\Users\KASRA\Desktop\AI learning docs\05-Web-Development\medusa-ui-testbed-then-custom-storefront.md`
+
+**Human pack:** numbered copies live in `doc/agent-priority/` (storage priority).  
+**UI mount pack:** `doc/ui-medusa-guides/` — curated guides for building / mounting a storefront on Medusa (`npm run sync:ui-medusa-guides`).
+
+## Always
+
+1. Read root `AGENTS.md` before large changes.
+2. Do not modify `C:\Users\KASRA\Desktop\mashoodwear` (original).
+3. Commerce admin = Medusa Admin only (option الف). Do not rebuild Medusa Admin inside Vite `/admin`.
+4. Prefer adapter layer under `frontend/src/api/medusa/` over redesigning brand UI.
+5. Never put payment gateway verify logic in React.
+6. When you discover an API/payment/region bug or surprise, append an entry to `doc/handshake-learnings.md` in the same session.
+7. Keep `doc/tasks-medusa.md` checkboxes in sync with real progress.
+8. Never rely on chat history alone as the archive.
+9. **Every meaningful session end:** update handshake/tasks (and AGENTS/rule if needed), then run `npm run sync:agent-priority` and `npm run sync:ui-medusa-guides`.
+
+## Transfer goal
+
+Anything learned about Store API, Iran address, shipping, and `pp_iran-bank_iran` must be written so a future custom UI can mount on the same Medusa backend without rediscovering the same bugs.

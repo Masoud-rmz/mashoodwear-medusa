@@ -1,0 +1,28 @@
+/**
+ * Persian fonts for admin-authored content — Peyda (body), Morabba (headings).
+ * Morabba woff2 files: frontend/public/fonts/morabba/
+ */
+
+@font-face {
+  font-family: "Morabba";
+  src: url("/fonts/morabba/Morabba-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Morabba";
+  src: url("/fonts/morabba/Morabba-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+.text-persian {
+  font-family: var(--font-persian-body);
+}
+
+.text-persian-heading {
+  font-family: var(--font-persian-display);
+}

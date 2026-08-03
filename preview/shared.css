@@ -1,0 +1,428 @@
+:root {
+  --color-bg: #000000;
+  --color-surface: rgba(255, 255, 255, 0.04);
+  --color-surface-elevated: rgba(255, 255, 255, 0.07);
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-primary: #330000;
+  --color-primary-hover: #4d0000;
+  --color-text: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.62);
+  --color-text-muted: rgba(255, 255, 255, 0.35);
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-button: 3px 3px 0px #330000;
+  --shadow-hover: 6px 6px 0px #4d0000;
+  --shadow-card: 4px 4px 0px #330000;
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
+  --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+/* Few recognizable Mashood logos on the black background */
+.logo-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.logo-bg__mark {
+  position: absolute;
+  width: var(--mark-size, 120px);
+  aspect-ratio: 2.8 / 1;
+  background: url(assets/mashoodlogo.png) center / contain no-repeat;
+  opacity: var(--mark-opacity, 0.14);
+  transform: rotate(var(--mark-rotate, 0deg)) translate3d(0, var(--mark-shift-y, 0px), 0);
+  will-change: transform;
+}
+
+.logo-bg__mark:nth-child(1) { top: 10%;  right: 5%;  --mark-size: 128px; --mark-rotate: -10deg; --mark-opacity: 0.15; }
+.logo-bg__mark:nth-child(2) { bottom: 16%; left: 4%;  --mark-size: 112px; --mark-rotate: 7deg;   --mark-opacity: 0.14; }
+.logo-bg__mark:nth-child(3) { top: 48%;  left: 2%;  --mark-size: 96px;  --mark-rotate: -5deg;  --mark-opacity: 0.12; }
+.logo-bg__mark:nth-child(4) { bottom: 6%;  right: 8%; --mark-size: 104px; --mark-rotate: 12deg;  --mark-opacity: 0.13; }
+
+main,
+.preview-banner,
+.preview-toolbar,
+.footer {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .logo-bg__mark:nth-child(3),
+  .logo-bg__mark:nth-child(4) { display: none; }
+  .logo-bg__mark:nth-child(1) { --mark-size: 96px;  top: 8%;  right: 4%; }
+  .logo-bg__mark:nth-child(2) { --mark-size: 88px; bottom: 12%; left: 3%; }
+}
+
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-5);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease),
+              transform var(--duration-fast) var(--ease),
+              box-shadow var(--duration-fast) var(--ease),
+              border-color var(--duration-fast) var(--ease);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-text);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-button);
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.btn-secondary:hover { border-color: var(--color-text); }
+
+.icon { width: 20px; height: 20px; flex-shrink: 0; }
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-5);
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+
+.logo-img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  transform: scale(1);
+  transition: transform var(--duration-fast) var(--ease);
+}
+
+.logo:hover .logo-img { transform: scale(1.08); }
+
+.logo-fallback {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.04em;
+  transform: scale(1);
+  transition: transform var(--duration-fast) var(--ease);
+}
+
+.logo:hover .logo-fallback { transform: scale(1.08); }
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.nav-links {
+  display: flex;
+  gap: var(--space-5);
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-secondary);
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.nav-links a:hover,
+.nav-links a.active { color: var(--color-primary); }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.cart-btn {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.cart-btn:hover { color: var(--color-primary); }
+
+.cart-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  padding: 8px;
+}
+
+.product-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color var(--duration-base) var(--ease),
+              transform var(--duration-base) var(--ease),
+              box-shadow var(--duration-base) var(--ease);
+}
+
+.product-card:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card);
+}
+
+.product-card-image {
+  aspect-ratio: 3 / 4;
+  background: var(--color-surface-elevated);
+  overflow: hidden;
+}
+
+.product-card-image-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  transition: transform 300ms var(--ease);
+}
+
+.product-card:hover .product-card-image-inner { transform: scale(1.04); }
+
+.product-card-body { padding: var(--space-4); }
+
+.product-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.product-price {
+  font-family: "Space Mono", monospace;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.footer {
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-7) var(--space-5) var(--space-5);
+  margin-top: var(--space-8);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: var(--space-6);
+  max-width: 1280px;
+  margin: 0 auto var(--space-6);
+}
+
+.footer-logo {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  line-height: 0;
+}
+
+.footer-logo-img {
+  height: 24px;
+  width: auto;
+  object-fit: contain;
+  transform: scale(1);
+  transition: transform var(--duration-fast) var(--ease);
+}
+
+.footer-logo:hover .footer-logo-img { transform: scale(1.08); }
+
+.footer-logo-fallback {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 24px;
+  transform: scale(1);
+  transition: transform var(--duration-fast) var(--ease);
+}
+
+.footer-logo:hover .footer-logo-fallback { transform: scale(1.08); }
+
+.footer-tagline {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  max-width: 280px;
+}
+
+.footer-heading {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links a {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.footer-links a:hover { color: var(--color-text); }
+
+.footer-bottom {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.footer-copy { font-size: 12px; color: var(--color-text-muted); }
+
+.social-links { display: flex; gap: var(--space-4); }
+
+.social-links a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.social-links a:hover { color: var(--color-text); }
+
+.preview-banner {
+  background: var(--color-primary);
+  text-align: center;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--duration-slow) var(--ease),
+              transform var(--duration-slow) var(--ease);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 1024px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hamburger { display: block; }
+  .footer-grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .btn, .product-card, .logo-img, .logo-fallback,
+  .footer-logo-img, .footer-logo-fallback,
+  .product-card-image-inner { transition: none; }
+  .logo-bg__mark {
+    will-change: auto;
+    transform: rotate(var(--mark-rotate, 0deg));
+  }
+}

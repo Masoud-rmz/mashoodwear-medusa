@@ -1,0 +1,30 @@
+{
+  "name": "mashoodwear-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "migrate": "node src/db/migrate.js && node scripts/seed-placeholder-images.mjs",
+    "seed:images": "node scripts/seed-placeholder-images.mjs",
+    "reset:cms": "node scripts/reset-cms-defaults.mjs",
+    "export:products-for-medusa": "node scripts/export-express-products-for-medusa.mjs",
+    "test": "node --test tests/*.test.js",
+    "test:unit": "node --test tests/parseForm.test.js tests/parse-route-id.test.js tests/orderCopy.test.js tests/cartStorage.test.js tests/variantSelection.test.js tests/medusaMappers.test.js tests/medusaCatalogFilters.test.js tests/medusaCartMappers.test.js tests/medusaCartStorage.test.js tests/medusaCheckout.test.js tests/medusaPayment.test.js tests/medusaPromotionHelpers.test.js tests/medusaGiftCardHelpers.test.js tests/wishlistStorage.test.js tests/medusaReturns.test.js tests/medusa-auth.test.js",
+    "test:legacy-express-catalog": "node --test tests/legacy-express-catalog/**/*.test.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dompurify": "^3.4.11",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.0.0",
+    "jsdom": "24.1.3",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0",
+    "mysql2": "^3.12.0"
+  }
+}
