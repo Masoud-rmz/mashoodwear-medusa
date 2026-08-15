@@ -1,53 +1,40 @@
 {
-
   "name": "mashoodwear-medusa",
-
   "version": "0.1.0",
-
   "private": true,
-
-  "description": "Mashhoodwear Vite storefront wired to Medusa v2 (Iran Pack). Medusa itself is started separately — see npm run notes:medusa.",
-
+  "description": "Mashhoodwear monorepo: Medusa Iran Pack + Vite storefront + CMS Express.",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "apps/medusa",
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-
-    "install:all": "npm install --prefix backend && npm install --prefix frontend",
-
+    "install:all": "npm install",
     "notes:medusa": "node scripts/print-medusa-dev-hint.mjs",
-
-    "dev:cms-backend": "npm run dev --prefix backend",
-
-    "dev:backend": "npm run dev --prefix backend",
-
-    "dev:frontend": "npm run dev --prefix frontend",
-
-    "migrate": "npm run migrate --prefix backend",
-
-    "seed:images": "npm run seed:images --prefix backend",
-
-    "reset:cms": "npm run reset:cms --prefix backend",
-
-    "export:products-for-medusa": "npm run export:products-for-medusa --prefix backend",
-
-    "build": "npm run build --prefix frontend",
-
-    "test": "npm run test:unit",
-
-    "test:backend": "npm test --prefix backend",
-
-    "test:unit": "npm run test:unit --prefix backend",
-
-    "test:legacy-express-catalog": "npm run test:legacy-express-catalog --prefix backend",
-
-    "sync:agent-priority": "node scripts/sync-agent-priority.mjs",
-
-    "sync:ui-medusa-guides": "node scripts/sync-ui-medusa-guides.mjs",
-
     "db:up": "docker compose up -d",
-
-    "db:down": "docker compose down"
-
+    "db:down": "docker compose down",
+    "dev:medusa": "npm run dev -w @mashoodwear/medusa",
+    "dev:cms": "npm run dev --prefix backend",
+    "dev:cms-backend": "npm run dev --prefix backend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "migrate": "npm run migrate --prefix backend",
+    "migrate:cms": "npm run migrate --prefix backend",
+    "migrate:medusa": "npm run medusa:migrate -w @mashoodwear/medusa",
+    "seed:images": "npm run seed:images --prefix backend",
+    "reset:cms": "npm run reset:cms --prefix backend",
+    "export:products-for-medusa": "npm run export:products-for-medusa --prefix backend",
+    "build": "npm run build --prefix frontend",
+    "build:frontend": "npm run build --prefix frontend",
+    "build:medusa": "npm run build -w @mashoodwear/medusa",
+    "test": "npm run test:unit",
+    "test:backend": "npm test --prefix backend",
+    "test:unit": "npm run test:unit --prefix backend",
+    "test:legacy-express-catalog": "npm run test:legacy-express-catalog --prefix backend",
+    "sync:agent-priority": "node scripts/sync-agent-priority.mjs",
+    "sync:ui-medusa-guides": "node scripts/sync-ui-medusa-guides.mjs"
   }
-
 }
-
-

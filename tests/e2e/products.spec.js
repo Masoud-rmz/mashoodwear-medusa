@@ -64,4 +64,10 @@ test.describe("Products page (Medusa catalog)", () => {
     await expect(page).toHaveURL(/\/products$/);
     await expect(page.getByRole("heading", { name: "Products", level: 1 })).toBeVisible();
   });
+
+  test("legacy /lookbook redirects to /products", async ({ page }) => {
+    await page.goto("/lookbook");
+    await expect(page).toHaveURL(/\/products$/);
+    await expect(page.getByRole("heading", { name: "Products", level: 1 })).toBeVisible();
+  });
 });

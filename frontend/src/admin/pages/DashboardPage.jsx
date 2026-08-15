@@ -5,7 +5,6 @@ const CMS_LINKS = [
   { to: "/cms/pages", label: "Pages", hint: "About, Contact, How to Buy" },
   { to: "/cms/home", label: "Home content", hint: "Hero and brand story" },
   { to: "/cms/settings", label: "Site settings", hint: "Card transfer, social links, logo, password" },
-  { to: "/cms/collections", label: "CMS collections", hint: "Fallback only — prefer Medusa Admin cover image" },
 ];
 
 /**
@@ -26,7 +25,7 @@ export default function DashboardPage() {
           Store commerce
         </h2>
         <p className="admin-hint">
-          Manage products, orders, inventory, and payment providers in Medusa Admin.
+          Manage products, collections, orders, inventory, and payment providers in Medusa Admin.
         </p>
         <a
           href={medusaAdminUrl}

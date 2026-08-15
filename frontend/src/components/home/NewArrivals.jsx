@@ -55,9 +55,9 @@ export default function NewArrivals() {
       {!loading && error && (
         <StateMessage
           variant="error"
-          message="Couldn't load data — refresh the page"
-          actionLabel="Refresh"
-          onAction={() => window.location.reload()}
+          message="Couldn't load data — try again"
+          actionLabel="Try again"
+          onAction={loadProducts}
         />
       )}
 

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import StateMessage from "../components/StateMessage";
 import ProductImage from "../components/ProductImage";
 import PromoCodeForm from "../components/cart/PromoCodeForm";
@@ -15,6 +15,7 @@ import { DEFAULT_COLOR_SENTINEL } from "../api/medusa/mappers.js";
  * Shopping cart page with qty controls, Medusa promo codes, and checkout CTA.
  */
 export default function CartPage() {
+  const navigate = useNavigate();
   const {
     items,
     loading,
@@ -135,7 +136,8 @@ export default function CartPage() {
           message="Your cart is empty"
           actionLabel="View Products"
           onAction={() => {
-            window.location.href = "/products";
+            // purpose --- stay in SPA; hard reload can hit a stale nginx dist / old Express UI ---
+            navigate("/products");
           }}
         />
       </div>

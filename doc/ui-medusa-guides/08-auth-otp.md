@@ -29,7 +29,7 @@ table td code, table th code {
 
 # راهنمای OTP و حساب خریدار (C-09)
 
-> **منبع حقیقت بک‌اند:** `F:\medusa-develop\my-medusa-store\apps\backend`  
+> **منبع حقیقت بک‌اند:** `apps/medusa` (همین monorepo)  
 > **ویترین تست:** `C:\Users\KASRA\Desktop\mashoodwear-medusa`  
 > **قرارداد API:** `my-medusa-store/docs/phase-a-iran-pack/storefront-api-contract.md` (C-09)
 
@@ -41,7 +41,7 @@ table td code, table th code {
 
 | لایه | مسیر | نقش |
 |------|------|-----|
-| Auth provider | `my-medusa-store/apps/backend/src/modules/phone-auth/` | OTP هویت موبایل + SMS.ir / stub |
+| Auth provider | `apps/medusa/src/modules/phone-auth/` | OTP هویت موبایل + SMS.ir / stub |
 | Store routes | `…/src/api/store/iran/auth/` | قرارداد ویترین `{ ok, … }` |
 | Config | `apps/backend/medusa-config.ts` | `phone-auth` + `emailpass` برای `customer` |
 | Adapter ویترین | `mashoodwear-medusa/frontend/src/api/medusa/auth.js` | فراخوانی مسیرهای بالا |
@@ -133,7 +133,8 @@ table td code, table th code {
 
 ```bash
 # Medusa — unit OTP/SMS stub
-cd F:\medusa-develop\my-medusa-store\apps\backend
+cd apps/medusa
+# یا از روت: npm run dev:medusa
 # Windows PowerShell:
 $env:TEST_TYPE='unit'; $env:NODE_OPTIONS='--experimental-vm-modules'
 npx jest --runInBand --forceExit --testPathPattern=phone-auth

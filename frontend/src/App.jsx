@@ -27,6 +27,9 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/collection" element={<Navigate to="/products" replace />} />
+        {/* purpose --- old storefront URLs; keep bookmarks/sitemap from loading a dead/legacy UI --- */}
+        <Route path="/lookbook" element={<Navigate to="/products" replace />} />
+        <Route path="/lookbook/" element={<Navigate to="/products" replace />} />
         <Route path="/collections" element={<CollectionsPage />} />
         <Route path="/collections/:slug" element={<CollectionDetailPage />} />
         <Route path="/categories" element={<CategoriesPage />} />

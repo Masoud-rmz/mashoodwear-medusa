@@ -43,8 +43,11 @@ export function createApp() {
   app.use("/sitemap.xml", sitemapRouter);
   app.use("/api/admin", adminRouter);
 
-  // Legacy URL — permanent redirect to renamed products page
+  // Legacy URLs — permanent redirect away from pre-Medusa storefront paths
   app.get("/collection", (_request, response) => {
+    response.redirect(301, "/products");
+  });
+  app.get(["/lookbook", "/lookbook/"], (_request, response) => {
     response.redirect(301, "/products");
   });
 

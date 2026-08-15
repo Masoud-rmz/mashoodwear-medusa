@@ -28,9 +28,13 @@
 }
 
 .product-card:hover {
-  border-color: var(--color-primary);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-card);
+  border-color: var(--color-accent);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card), var(--shadow-soft);
+}
+
+.product-card:active {
+  transform: translateY(-1px);
 }
 
 .product-card-image {
@@ -55,7 +59,7 @@
 }
 
 .product-card:hover .product-card-image-inner {
-  transform: scale(1.04);
+  transform: scale(1.06);
 }
 
 .product-card-body {

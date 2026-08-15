@@ -5,10 +5,16 @@ export default defineConfig({
   plugins: [
     react(),
     {
-      name: "legacy-collection-redirect",
+      name: "legacy-storefront-redirect",
       configureServer(server) {
         server.middlewares.use((request, response, next) => {
-          if (request.url === "/collection" || request.url === "/collection/") {
+          const path = request.url?.split("?")[0];
+          if (
+            path === "/collection" ||
+            path === "/collection/" ||
+            path === "/lookbook" ||
+            path === "/lookbook/"
+          ) {
             response.writeHead(301, { Location: "/products" });
             response.end();
             return;

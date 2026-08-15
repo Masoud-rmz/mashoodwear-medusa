@@ -1,21 +1,27 @@
 /**
- * Print how to start Medusa (Iran Pack) for local storefront work.
- * purpose --- Medusa lives outside this repo; remind operators not to look for npm run medusa here ---
+ * Print how to start the full local stack (Medusa lives in apps/medusa).
+ * purpose --- one cloneable monorepo; remind operators of the three-terminal flow ---
  */
-const medusaBackendPath =
-  process.env.MEDUSA_BACKEND_PATH ||
-  "F:\\medusa-develop\\my-medusa-store\\apps\\backend";
-
 console.log(`
-Medusa (Iran Pack) runs outside this repo — start it in a separate terminal:
+Mashhoodwear monorepo — local stack
 
-  cd ${medusaBackendPath}
-  npm run dev
+  1) Databases (once):
+     npm run db:up
 
-  Store API:  http://localhost:9000
-  Admin UI:   http://localhost:9000/app
+  2) Medusa Iran Pack (commerce :9000):
+     npm run dev:medusa
+     Store API:  http://localhost:9000
+     Admin UI:   http://localhost:9000/app
 
-Then in this repo:
-  npm run db:up && npm run dev:cms-backend   # optional CMS (:3001)
-  npm run dev:frontend                      # Vite storefront (:5173)
+  3) CMS Express (optional :3001):
+     npm run migrate:cms   # first time
+     npm run dev:cms
+
+  4) Vite storefront (:5173):
+     npm run dev:frontend
+
+Env templates:
+  apps/medusa/.env.example  → apps/medusa/.env
+  frontend/.env.example     → frontend/.env
+  backend/.env.example      → backend/.env
 `);

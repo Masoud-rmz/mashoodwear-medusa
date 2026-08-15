@@ -1,6 +1,5 @@
-/* purpose --- padding-block only so .container horizontal gutters stay intact --- */
 .cms-page {
-  padding-block: var(--space-6) var(--space-8);
+  padding: var(--space-6) 0 var(--space-8);
 }
 
 .cms-page--about {

@@ -9,6 +9,7 @@ import RelatedProducts from "../components/products/RelatedProducts";
 import VariantPicker from "../components/products/VariantPicker";
 import ProductAttributes from "../components/products/ProductAttributes";
 import StateMessage from "../components/StateMessage";
+import { CheckIcon, SpinnerIcon } from "../components/icons";
 import { formatPrice } from "../utils/formatPrice";
 import { useCart } from "../hooks/useCart";
 import { DEFAULT_COLOR_SENTINEL } from "../api/medusa/mappers.js";
@@ -37,8 +38,9 @@ export default function ProductDetailPage() {
   const [selectedHeight, setSelectedHeight] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedExtras, setSelectedExtras] = useState({});
-  const [toastMessage, setToastMessage] = useState(null);
+  const [toast, setToast] = useState(null);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
 
   const backLink = useMemo(() => {
     const from = location.state?.from;
@@ -90,11 +92,12 @@ export default function ProductDetailPage() {
   const hasColorOptions = Boolean(product?.hasColorOptions);
   const hasHeightOptions = Boolean(product?.hasHeightOptions);
   const declaredColors = product?.colors || [];
+  const declaredSizes = product?.sizes || [];
   const extraOptions = product?.extraOptions || [];
 
   const sizes = useMemo(
-    () => (product ? uniqueSizes(product.variants) : []),
-    [product]
+    () => (product ? uniqueSizes(product.variants, undefined, declaredSizes) : []),
+    [product, declaredSizes]
   );
 
   const heights = useMemo(
@@ -175,32 +178,106 @@ export default function ProductDetailPage() {
     }));
   };
 
-  const findSelectedVariant = () => {
+  const selectedVariant = useMemo(() => {
     if (!product) {
       return null;
     }
     const effectiveColor = hasColorOptions
       ? selectedColor
       : selectedColor || DEFAULT_COLOR_SENTINEL;
-    return product.variants.find((item) => {
-      if (item.size !== selectedSize || item.color !== effectiveColor) {
-        return false;
-      }
-      if (
-        hasHeightOptions &&
-        String(item.height || "") !== String(selectedHeight || "")
-      ) {
-        return false;
-      }
-      for (const option of extraOptions) {
-        const wanted = selectedExtras[option.title];
-        if (wanted && item.extraOptions?.[option.title] !== wanted) {
+    if (!selectedSize || (hasColorOptions && !effectiveColor)) {
+      return null;
+    }
+    if (hasHeightOptions && !selectedHeight) {
+      return null;
+    }
+    return (
+      product.variants.find((item) => {
+        if (item.size !== selectedSize || item.color !== effectiveColor) {
           return false;
         }
-      }
-      return true;
-    });
-  };
+        if (
+          hasHeightOptions &&
+          String(item.height || "") !== String(selectedHeight || "")
+        ) {
+          return false;
+        }
+        for (const option of extraOptions) {
+          const wanted = selectedExtras[option.title];
+          if (wanted && item.extraOptions?.[option.title] !== wanted) {
+            return false;
+          }
+        }
+        return true;
+      }) || null
+    );
+  }, [
+    product,
+    selectedSize,
+    selectedColor,
+    selectedHeight,
+    selectedExtras,
+    hasColorOptions,
+    hasHeightOptions,
+    extraOptions,
+  ]);
+
+  const displayPrice = useMemo(() => {
+    if (!product) {
+      return 0;
+    }
+    if (selectedVariant && Number(selectedVariant.price) > 0) {
+      return selectedVariant.price;
+    }
+    return product.price;
+  }, [product, selectedVariant]);
+
+  const displayPriceLabel = useMemo(() => {
+    if (!product) {
+      return "";
+    }
+    if (selectedVariant && Number(selectedVariant.price) > 0) {
+      return formatPrice(selectedVariant.price);
+    }
+    const max = Number(product.priceMax) || 0;
+    const min = Number(product.price) || 0;
+    if (max > min && min > 0) {
+      return `از ${formatPrice(min)}`;
+    }
+    return formatPrice(min);
+  }, [product, selectedVariant]);
+
+  const displayAttributes = useMemo(() => {
+    if (!product) {
+      return null;
+    }
+    const variantAttrs = selectedVariant?.attributes;
+    if (!variantAttrs) {
+      return product.attributes;
+    }
+    const hasVariantPhysical = [
+      variantAttrs.height,
+      variantAttrs.width,
+      variantAttrs.length,
+      variantAttrs.weight,
+    ].some((value) => value !== null && value !== undefined);
+    const hasVariantCodes = Boolean(
+      variantAttrs.hsCode || variantAttrs.midCode || variantAttrs.originCountry
+    );
+    if (!hasVariantPhysical && !hasVariantCodes) {
+      return product.attributes;
+    }
+    return {
+      height: variantAttrs.height ?? product.attributes?.height ?? null,
+      width: variantAttrs.width ?? product.attributes?.width ?? null,
+      length: variantAttrs.length ?? product.attributes?.length ?? null,
+      weight: variantAttrs.weight ?? product.attributes?.weight ?? null,
+      hsCode: variantAttrs.hsCode || product.attributes?.hsCode || "",
+      midCode: variantAttrs.midCode || product.attributes?.midCode || "",
+      originCountry:
+        variantAttrs.originCountry || product.attributes?.originCountry || "",
+    };
+  }, [product, selectedVariant]);
 
   const handleAddToCart = async () => {
     if (!product || cartState.disabled || addingToCart) {
@@ -211,10 +288,10 @@ export default function ProductDetailPage() {
       ? selectedColor
       : selectedColor || DEFAULT_COLOR_SENTINEL;
 
-    const variant = findSelectedVariant();
+    const variant = selectedVariant;
 
     if (!variant?.variantId) {
-      setToastMessage("Could not add — variant unavailable");
+      setToast({ message: "Could not add — variant unavailable", variant: "error" });
       return;
     }
 
@@ -227,15 +304,17 @@ export default function ProductDetailPage() {
         selectedHeight: selectedHeight ?? "",
         selectedColor: effectiveColor ?? "",
         name: product.name,
-        price: variant?.price ?? product.price,
+        price: variant?.price > 0 ? variant.price : displayPrice,
         slug: product.slug,
         imageUrl: product.images[0] ?? null,
         variantStock: variant?.stock,
         variantId: variant.variantId,
       });
-      setToastMessage("Added to cart");
+      setToast({ message: "Added to cart", variant: "success" });
+      setJustAdded(true);
+      window.setTimeout(() => setJustAdded(false), 1800);
     } catch {
-      setToastMessage("Could not add to cart — try again");
+      setToast({ message: "Could not add to cart — try again", variant: "error" });
     } finally {
       setAddingToCart(false);
     }
@@ -293,7 +372,9 @@ export default function ProductDetailPage() {
               {product.name}
             </PersianText>
           </div>
-          <p className="product-price">{formatPrice(product.price)}</p>
+          <p className="product-price" aria-live="polite">
+            {displayPriceLabel}
+          </p>
 
           <VariantPicker
             sizes={sizes}
@@ -328,11 +409,23 @@ export default function ProductDetailPage() {
 
           <button
             type="button"
-            className="btn btn-primary add-to-cart-btn"
+            className={`btn btn-primary add-to-cart-btn${justAdded ? " add-to-cart-btn--added" : ""}`}
             disabled={cartState.disabled || addingToCart}
             onClick={handleAddToCart}
           >
-            {addingToCart ? "Adding…" : cartState.label}
+            {addingToCart ? (
+              <>
+                <SpinnerIcon />
+                Adding…
+              </>
+            ) : justAdded ? (
+              <>
+                <CheckIcon />
+                Added to Cart
+              </>
+            ) : (
+              cartState.label
+            )}
           </button>
 
           {product.description && (
@@ -341,14 +434,18 @@ export default function ProductDetailPage() {
             </PersianText>
           )}
 
-          <ProductAttributes attributes={product.attributes} />
+          <ProductAttributes attributes={displayAttributes} />
         </div>
       </div>
 
       <RelatedProducts productSlug={product.slug} />
 
-      {toastMessage && (
-        <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
+      {toast && (
+        <Toast
+          message={toast.message}
+          variant={toast.variant}
+          onDismiss={() => setToast(null)}
+        />
       )}
     </div>
   );

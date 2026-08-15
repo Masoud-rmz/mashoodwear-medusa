@@ -126,6 +126,55 @@ describe("extractVariantOptions", () => {
     assert.equal(result.color, "Black");
     assert.equal(result.hasColorOption, true);
   });
+
+  it("parses size/height/color from three-part variant title", () => {
+    const result = extractVariantOptions({
+      title: "M / 180 / Black",
+      options: [],
+    });
+    assert.equal(result.size, "M");
+    assert.equal(result.height, "180");
+    assert.equal(result.color, "Black");
+    assert.equal(result.hasHeightOption, true);
+    assert.equal(result.hasColorOption, true);
+  });
+
+  it("uses product option kinds so Size+قد are not treated as Size+Color", () => {
+    const result = extractVariantOptions(
+      {
+        title: "L / 175",
+        options: [{ value: "L" }, { value: "175" }],
+      },
+      undefined,
+      { productOptionKinds: ["size", "height"] }
+    );
+    assert.equal(result.size, "L");
+    assert.equal(result.height, "175");
+    assert.equal(result.hasHeightOption, true);
+    assert.equal(result.hasColorOption, false);
+    assert.equal(result.color, "Default");
+  });
+});
+
+describe("extractVariantPrice", () => {
+  it("falls back to prices[] when calculated_price missing", () => {
+    assert.equal(
+      extractVariantPrice({
+        prices: [{ amount: 520000, currency_code: "irt" }],
+      }),
+      520000
+    );
+  });
+
+  it("prefers calculated_amount over prices[]", () => {
+    assert.equal(
+      extractVariantPrice({
+        calculated_price: { calculated_amount: 100 },
+        prices: [{ amount: 999 }],
+      }),
+      100
+    );
+  });
 });
 
 describe("mapMedusaProduct color facets", () => {
@@ -258,6 +307,31 @@ describe("mapMedusaVariant + product item", () => {
       midCode: "",
       originCountry: "",
     });
+  });
+
+  it("exposes per-variant physical attributes and price range", () => {
+    const detail = mapMedusaProductToDetail({
+      ...sampleProduct,
+      variants: [
+        {
+          ...sampleProduct.variants[0],
+          height: 10,
+          calculated_price: { calculated_amount: 400000 },
+        },
+        {
+          ...sampleProduct.variants[1],
+          height: 20,
+          inventory_quantity: 2,
+          calculated_price: { calculated_amount: 550000 },
+        },
+      ],
+    });
+    assert.equal(detail.price, 400000);
+    assert.equal(detail.priceMax, 550000);
+    assert.equal(detail.variants[0].attributes.height, 10);
+    assert.equal(detail.variants[1].attributes.height, 20);
+    assert.ok(detail.sizes.includes("M"));
+    assert.ok(detail.sizes.includes("L"));
   });
 });
 

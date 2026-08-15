@@ -4,15 +4,13 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import CommerceMovedToMedusaPage from "./pages/CommerceMovedToMedusaPage";
-import CollectionsListPage from "./pages/CollectionsListPage";
-import CollectionFormPage from "./pages/CollectionFormPage";
 import PagesEditorPage from "./pages/PagesEditorPage";
 import HomeSettingsPage from "./pages/HomeSettingsPage";
 import SettingsPage from "./pages/SettingsPage";
 
 /**
  * Admin SPA routes under /cms.
- * Path A: products/categories CRUD removed; commerce → Medusa Admin only.
+ * Path A: products/categories/collections CRUD removed; commerce → Medusa Admin only.
  */
 export default function AdminApp() {
   return (
@@ -33,9 +31,14 @@ export default function AdminApp() {
             path="categories"
             element={<CommerceMovedToMedusaPage resource="categories" />}
           />
-          <Route path="collections" element={<CollectionsListPage />} />
-          <Route path="collections/new" element={<CollectionFormPage />} />
-          <Route path="collections/:id" element={<CollectionFormPage />} />
+          <Route
+            path="collections"
+            element={<CommerceMovedToMedusaPage resource="collections" />}
+          />
+          <Route
+            path="collections/*"
+            element={<CommerceMovedToMedusaPage resource="collections" />}
+          />
           <Route path="pages" element={<PagesEditorPage />} />
           <Route path="home" element={<HomeSettingsPage />} />
           <Route path="settings" element={<SettingsPage />} />

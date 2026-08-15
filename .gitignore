@@ -3,9 +3,19 @@ node_modules/
 
 # Environment secrets
 .env
+**/.env
+!**/.env.example
+!**/.env.template
 backend/.env
 frontend/.env
 frontend/.env.local
+apps/medusa/.env
+
+# Medusa build / cache
+apps/medusa/.medusa/
+apps/medusa/dist/
+apps/medusa/build/
+apps/medusa/coverage/
 
 # Build output — run `npm run build` on deploy
 frontend/dist/
@@ -25,6 +35,12 @@ backend/exports/
 tests/e2e/test-results/
 tests/e2e/playwright-report/
 playwright/.cache/
+
+# One-off local deploy helpers (never commit)
+_*.py
+_*.sh
+_deploy_tail.txt
+_remote_*.sh
 
 # Logs and OS
 *.log

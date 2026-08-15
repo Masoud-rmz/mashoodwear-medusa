@@ -37,12 +37,14 @@ table td code, table th code {
 | سفارش، پرداخت، مشتری (**و Addresses مشتری**)، منطقه، shipping، **تخفیف / Promotion** | Medusa Admin |
 | صفحات About / Contact / How to Buy | `/admin` mashoodwear (Express) |
 | Lookbook، Home hero، Instagram/Telegram settings | `/admin` mashoodwear (Express) |
-| Collections برند (ساخت/ویرایش + عکس کاور در Medusa Admin) | Medusa Admin → Collections → Cover image widget |
-| Collections برند (فال‌بک موقت اگر Medusa خالی باشد) | `/admin` → Collections (Express) |
+| Collections برند (ساخت/ویرایش + عکس کاور) | Medusa Admin → Collections → Cover image widget |
+| ~~Collections در Express CMS~~ | **حذف شد** — دیگر در `/cms` مدیریت نمی‌شود |
 
-## سایز / رنگ و کد تخفیف
+## سایز / رنگ / قد / ارتفاع و کد تخفیف
 
-- **سایز و رنگ** = Product Options در Medusa (`Size` / `Color` یا `سایز` / `رنگ`). ویترین فقط از Store API می‌خواند؛ CRUD در `/admin` mashoodwear نیست.
+- **سایز، رنگ، قد** = Product Options در Medusa (`Size` / `Color` / `قد` یا معادل). ویترین از Store API می‌خواند و برای هر واریانت مقدار خودش را نشان می‌دهد.
+- **ارتفاع / عرض / طول / وزن** = ویژگی‌های فیزیکی هر واریانت در Medusa Admin («ویژگی‌ها» روی variant). روی PDP بعد از انتخاب واریانت به‌روز می‌شود.
+- **قیمت per-variant** = اگر در Admin برای هر گزینه قیمت جدا بگذارید، PDP قیمت همان واریانت را نشان می‌دهد (کارت محصول: «از …» وقتی بازه باشد).
 - **کد تخفیف** = Promotion در Medusa Admin؛ خریدار روی صفحه Cart با `POST /store/carts/:id/promotions` اعمال می‌کند. منطق قانون تخفیف در React کپی نمی‌شود.
 - **آدرس خریدار** = Customer Addresses در Medusa؛ ویترین با `/store/customers/me/addresses` ذخیره می‌کند؛ ادمین در `Customers → [customer] → Addresses` می‌بیند (نه داخل `/admin` mashoodwear).
 
@@ -57,6 +59,12 @@ table td code, table th code {
 - env: `VITE_MEDUSA_ADMIN_URL` (پیش‌فرض `http://localhost:9000/app`)
 - در Dashboard و هدر سایدبار: دکمهٔ **Manage store in Medusa Admin**
 - مسیرهای `/admin/products` و `/admin/categories` صفحهٔ deprecate با لینک به Medusa نشان می‌دهند (نه فرم CRUD)
+
+## نقشهٔ راه فروشنده (فارسی)
+
+راهنمای قدم‌به‌قدم منوی فارسی Medusa (محصول، کانال فروش، موجودی، تخفیف، …):
+
+→ [`medusa-admin-merchant-roadmap-fa.md`](./medusa-admin-merchant-roadmap-fa.md)
 
 ## نقش‌ها به‌صورت خلاصه
 

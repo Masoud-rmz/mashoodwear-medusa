@@ -58,6 +58,9 @@ table td code, table th code {
 
 **حداقل کوتاه برای شروع کد:** `01` → `05` → `06` → `10` → hotspots در AGENTS.
 
+**برای فروشنده / اپراتور پنل (فارسی):**  
+[`../medusa-admin-merchant-roadmap-fa.md`](../medusa-admin-merchant-roadmap-fa.md) — ترتیب فروشگاه → کانال → انبار → محصول → موجودی → تخفیف → سفارش.
+
 ---
 
 ## فهرست فایل‌ها ↔ canonical

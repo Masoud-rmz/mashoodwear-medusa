@@ -121,12 +121,24 @@ export function uniqueHeights(variants, declared = []) {
 
 /**
  * Unique sizes from variants in display order.
+ * Merges declared product Size option values so each Admin-entered size appears.
  * @param {Array<{ size: string }>} variants
  * @param {string[]} [preferredOrder]
+ * @param {string[]} [declared]
  * @returns {string[]}
  */
-export function uniqueSizes(variants, preferredOrder = ["S", "M", "L", "XL", "2XL"]) {
-  const sizes = [...new Set(variants.map((variant) => variant.size))];
+export function uniqueSizes(
+  variants,
+  preferredOrder = ["S", "M", "L", "XL", "2XL"],
+  declared = []
+) {
+  const sizes = [
+    ...new Set(
+      [...declared, ...variants.map((variant) => variant.size)]
+        .map((size) => String(size || "").trim())
+        .filter(Boolean)
+    ),
+  ];
   return sizes.sort((left, right) => {
     const leftIndex = preferredOrder.indexOf(left);
     const rightIndex = preferredOrder.indexOf(right);

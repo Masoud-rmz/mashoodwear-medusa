@@ -17,7 +17,7 @@ describe("getAddToCartState", () => {
     });
 
     assert.equal(state.disabled, true);
-    assert.equal(state.label, "Pick a size and color first");
+    assert.equal(state.label, "ابتدا سایز را انتخاب کنید");
   });
 
   it("shows Sold out for out_of_stock product status", () => {
@@ -41,7 +41,7 @@ describe("getAddToCartState", () => {
     });
 
     assert.equal(state.disabled, true);
-    assert.equal(state.label, "This size and color is sold out");
+    assert.equal(state.label, "این ترکیب موجود نیست");
   });
 
   it("shows Sold out when all variants have zero stock but status is active", () => {

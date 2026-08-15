@@ -2,12 +2,11 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { medusaAdminUrl } from "../api/medusa/client";
 import { clearAdminToken } from "../utils/adminAuth";
 
-/** CMS-only nav — commerce CRUD lives in Medusa Admin (Path A). */
+/** CMS-only nav — commerce (incl. collections) lives in Medusa Admin (Path A). */
 const NAV = [
   { to: "/cms", label: "Dashboard", end: true },
   { to: "/cms/pages", label: "Pages" },
   { to: "/cms/home", label: "Home" },
-  { to: "/cms/collections", label: "Collections" },
   { to: "/cms/settings", label: "Settings" },
 ];
 

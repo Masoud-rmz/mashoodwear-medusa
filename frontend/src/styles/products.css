@@ -28,9 +28,15 @@
   font-size: 16px;
 }
 
+.search-input {
+  transition: border-color var(--duration-fast) var(--ease),
+    box-shadow var(--duration-fast) var(--ease);
+}
+
 .search-input:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
 
 .product-search-btn {

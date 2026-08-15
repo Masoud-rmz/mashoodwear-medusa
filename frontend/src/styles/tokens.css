@@ -9,6 +9,10 @@
   --color-border: rgba(255, 255, 255, 0.12);
   --color-primary: #330000;
   --color-primary-hover: #4d0000;
+  /* Accent --- brighter maroon reserved for interactive highlights so CTAs/links read on pure black without changing brand identity --- */
+  --color-accent: #8a1523;
+  --color-accent-hover: #a81b2c;
+  --color-primary-soft: rgba(138, 21, 35, 0.14);
   --color-text: #ffffff;
   --color-text-secondary: rgba(255, 255, 255, 0.62);
   --color-text-muted: rgba(255, 255, 255, 0.35);
@@ -33,15 +37,23 @@
   --space-8: 64px;
   --space-9: 96px;
 
+  --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
+  --radius-xl: 16px;
 
   --shadow-button: 3px 3px 0px #330000;
   --shadow-hover: 6px 6px 0px #4d0000;
   --shadow-card: 4px 4px 0px #330000;
+  /* Soft depth shadows --- layered under the brutalist offset for a richer, less flat feel --- */
+  --shadow-soft: 0 6px 20px rgba(0, 0, 0, 0.45);
+  --shadow-elevated: 0 16px 40px rgba(0, 0, 0, 0.55);
+  --shadow-glow: 0 10px 30px rgba(138, 21, 35, 0.28);
 
   --duration-fast: 150ms;
   --duration-base: 200ms;
   --duration-slow: 300ms;
   --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Spring easing --- subtle overshoot for lively hover/press micro-interactions --- */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
 }

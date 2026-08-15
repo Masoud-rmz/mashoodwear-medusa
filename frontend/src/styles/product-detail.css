@@ -76,7 +76,7 @@
 }
 
 .product-gallery-thumb.active {
-  border-color: var(--color-primary);
+  border-color: var(--color-accent);
 }
 
 .product-gallery-thumb img {
@@ -131,6 +131,25 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+/* Transient confirmation state --- brief green-free maroon->success flash keeps brand palette while confirming the action --- */
+.add-to-cart-btn--added,
+.add-to-cart-btn--added:disabled {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-text);
+  opacity: 1;
+}
+
+.spinner-icon {
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .product-desc {
@@ -189,22 +208,54 @@
   position: fixed;
   top: 88px;
   right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   background: var(--color-surface-elevated);
   border: 1px solid var(--color-border);
-  border-left: 3px solid var(--color-primary);
+  border-left: 3px solid var(--color-accent);
   padding: 14px 20px;
   border-radius: var(--radius-md);
   font-size: 14px;
+  font-weight: 500;
   z-index: 400;
   opacity: 0;
   transform: translateX(20px);
-  transition: all var(--duration-base) var(--ease);
+  transition: opacity var(--duration-base) var(--ease),
+    transform var(--duration-base) var(--ease-spring);
+  box-shadow: var(--shadow-elevated);
   pointer-events: none;
 }
 
 .toast.show {
   opacity: 1;
   transform: translateX(0);
+}
+
+.toast-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.toast-icon .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.toast--success {
+  border-left-color: var(--color-accent);
+}
+
+.toast--success .toast-icon {
+  color: var(--color-text);
+}
+
+.toast--error {
+  border-left-color: var(--color-error);
+}
+
+.toast--error .toast-icon {
+  color: #d16b6b;
 }
 
 @media (max-width: 768px) {

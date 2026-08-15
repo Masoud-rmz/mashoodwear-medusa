@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
-# Dual-stack production deploy for Iran VPS:
-#   - Medusa Iran Pack at /opt/medusa (commerce :9000)
-#   - mashoodwear-medusa at /opt/mashoodwear (Vite UI + CMS Express :3001)
+# Dual-stack production deploy for Iran VPS (monorepo):
+#   - mashoodwear-medusa at /opt/mashoodwear
+#   - Medusa Iran Pack at /opt/mashoodwear/apps/medusa (:9000)
+#   - CMS Express at /opt/mashoodwear/backend (:3001)
+#   - Vite UI at /opt/mashoodwear/frontend/dist
 # Usage (as root):
 #   bash deploy-dual-stack-iran.sh mashoodwear.ir
 # Optional env:
-#   MEDUSA_TARBALL=/root/medusa-iran-pack-backup-*.tar.gz   # preferred when GitHub private/unavailable
-#   MEDUSA_REPO_URL=https://github.com/OWNER/REPO.git
-#   SKIP_UI_CUTOVER=1   # only bring Medusa up; leave old Express site running
-#   SITE_SCHEME=http     # default http (Certbot often blocked in Iran)
+#   UI_REPO_URL=https://github.com/callmesallad/mashoodwear-medusa.git
+#   MEDUSA_TARBALL=...   # legacy fallback only (copies into apps/medusa)
+#   SKIP_UI_CUTOVER=1    # install Medusa from monorepo/tarball; leave old site if present
+#   SITE_SCHEME=http
 
 set -euo pipefail
 
@@ -18,7 +20,7 @@ SITE_SCHEME="${SITE_SCHEME:-http}"
 SITE_ORIGIN="${SITE_SCHEME}://${DOMAIN}"
 
 APP_DIR="/opt/mashoodwear"
-MEDUSA_DIR="/opt/medusa"
+MEDUSA_DIR="${APP_DIR}/apps/medusa"
 UPLOAD_DIR="/var/lib/mashoodwear/uploads"
 SERVICE_USER="www-data"
 NPM_REGISTRY="https://package-mirror.liara.ir/repository/npm/"
@@ -88,66 +90,65 @@ mysql -e "CREATE USER IF NOT EXISTS '${DB_USER_CMS}'@'localhost' IDENTIFIED BY '
 mysql -e "ALTER USER '${DB_USER_CMS}'@'localhost' IDENTIFIED BY '${DB_PASS_CMS}';"
 mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME_CMS}.* TO '${DB_USER_CMS}'@'localhost'; FLUSH PRIVILEGES;"
 
-install_medusa_from_tarball() {
+install_medusa_from_tarball_into_apps() {
+  # purpose --- legacy fallback when monorepo apps/medusa is missing ---
   local tarball="$1"
   [[ -f "${tarball}" ]] || die "Medusa tarball not found: ${tarball}"
-  rm -rf "${MEDUSA_DIR}"
-  mkdir -p /opt /tmp/medusa-extract
-  rm -rf /tmp/medusa-extract/*
+  mkdir -p "${APP_DIR}/apps" /tmp/medusa-extract
+  rm -rf /tmp/medusa-extract/* "${MEDUSA_DIR}"
   tar -xzf "${tarball}" -C /tmp/medusa-extract
-  if [[ -d /tmp/medusa-extract/my-medusa-store ]]; then
-    mv /tmp/medusa-extract/my-medusa-store "${MEDUSA_DIR}"
+  if [[ -d /tmp/medusa-extract/apps/medusa ]]; then
+    mv /tmp/medusa-extract/apps/medusa "${MEDUSA_DIR}"
   elif [[ -d /tmp/medusa-extract/apps/backend ]]; then
-    mkdir -p "${MEDUSA_DIR}"
-    mv /tmp/medusa-extract/* "${MEDUSA_DIR}/"
+    mv /tmp/medusa-extract/apps/backend "${MEDUSA_DIR}"
+  elif [[ -d /tmp/medusa-extract/my-medusa-store/apps/backend ]]; then
+    mv /tmp/medusa-extract/my-medusa-store/apps/backend "${MEDUSA_DIR}"
+  elif [[ -f /tmp/medusa-extract/package.json ]] && [[ -f /tmp/medusa-extract/medusa-config.ts ]]; then
+    mv /tmp/medusa-extract "${MEDUSA_DIR}"
   else
     die "Unexpected tarball layout under /tmp/medusa-extract"
   fi
   rm -rf /tmp/medusa-extract
 }
 
-install_medusa_from_git() {
-  local url="$1"
-  if [[ -d "${MEDUSA_DIR}/.git" ]]; then
-    git -C "${MEDUSA_DIR}" fetch origin
-    git -C "${MEDUSA_DIR}" reset --hard origin/master || git -C "${MEDUSA_DIR}" reset --hard origin/main
+log "Safety backup of current /opt/mashoodwear before monorepo deploy..."
+STAMP="$(date +%Y%m%d-%H%M%S)"
+mkdir -p "/root/backups/pre-cutover-${STAMP}"
+if [[ -d "${APP_DIR}" ]]; then
+  tar -C /opt -czf "/root/backups/pre-cutover-${STAMP}/mashoodwear-app.tar.gz" mashoodwear || true
+fi
+mysqldump --single-transaction --routines --triggers "${DB_NAME_CMS}" 2>/dev/null \
+  | gzip > "/root/backups/pre-cutover-${STAMP}/mashoodwear-db.sql.gz" || true
+
+PREV_ENV=""
+if [[ -f "${APP_DIR}/backend/.env" ]]; then
+  PREV_ENV="$(mktemp)"
+  cp -a "${APP_DIR}/backend/.env" "${PREV_ENV}"
+fi
+
+log "Deploying monorepo → ${APP_DIR}"
+systemctl stop mashoodwear-api || true
+systemctl stop medusa-api || true
+rm -rf "${APP_DIR}"
+git clone "${UI_REPO_URL}" "${APP_DIR}"
+
+if [[ ! -d "${MEDUSA_DIR}" ]]; then
+  log "apps/medusa missing in clone — trying legacy tarball..."
+  if [[ -n "${MEDUSA_TARBALL}" ]]; then
+    install_medusa_from_tarball_into_apps "${MEDUSA_TARBALL}"
+  elif ls /root/medusa-iran-pack-backup-*.tar.gz >/dev/null 2>&1; then
+    install_medusa_from_tarball_into_apps "$(ls -1t /root/medusa-iran-pack-backup-*.tar.gz | head -1)"
   else
-    rm -rf "${MEDUSA_DIR}"
-    git clone "${url}" "${MEDUSA_DIR}"
+    die "Monorepo missing apps/medusa and no MEDUSA_TARBALL available"
   fi
-}
-
-log "Installing Medusa sources → ${MEDUSA_DIR}"
-if [[ -n "${MEDUSA_TARBALL}" ]]; then
-  install_medusa_from_tarball "${MEDUSA_TARBALL}"
-elif [[ -n "${MEDUSA_REPO_URL}" ]]; then
-  install_medusa_from_git "${MEDUSA_REPO_URL}"
-elif ls /root/medusa-iran-pack-backup-*.tar.gz >/dev/null 2>&1; then
-  install_medusa_from_tarball "$(ls -1t /root/medusa-iran-pack-backup-*.tar.gz | head -1)"
-else
-  die "Set MEDUSA_TARBALL=/path/to.tar.gz or MEDUSA_REPO_URL=... (or place tarball in /root/)"
 fi
 
-# Drop Next storefront from workspaces to save disk/RAM on small VPS
-if [[ -f "${MEDUSA_DIR}/package.json" ]]; then
-  python3 - <<'PY' || true
-import json
-from pathlib import Path
-p = Path("/opt/medusa/package.json")
-data = json.loads(p.read_text())
-ws = data.get("workspaces") or []
-if isinstance(ws, list):
-    data["workspaces"] = [w for w in ws if "storefront" not in w]
-    p.write_text(json.dumps(data, indent=2) + "\n")
-PY
-  rm -rf "${MEDUSA_DIR}/apps/storefront"
-fi
-
-log "npm install Medusa (Liara mirror)..."
-cd "${MEDUSA_DIR}"
+log "npm install monorepo (Liara mirror)..."
+cd "${APP_DIR}"
 npm install --no-fund --no-audit
+npm install jsdom@24.1.3 --prefix backend --save-exact --no-fund --no-audit || true
 
-MEDUSA_ENV="${MEDUSA_DIR}/apps/backend/.env"
+MEDUSA_ENV="${MEDUSA_DIR}/.env"
 JWT_SECRET="$(openssl rand -hex 32)"
 COOKIE_SECRET="$(openssl rand -hex 32)"
 MFA_KEY="$(openssl rand -hex 32)"
@@ -183,6 +184,8 @@ IRAN_BANK_CALLBACK_BASE_URL=${SITE_ORIGIN}
 
 PHONE_AUTH_JWT_SECRET=${PHONE_JWT}
 SMS_IR_STUB=1
+# purpose --- Certbot often blocked in Iran; allow http origins until TLS works ---
+CORS_PRODUCTION_GUARD=0
 EOF
 chmod 600 "${MEDUSA_ENV}"
 mkdir -p /root/backups
@@ -197,19 +200,18 @@ chmod 600 /root/backups/medusa-pg-credentials.txt
 log "Postgres credentials saved to /root/backups/medusa-pg-credentials.txt"
 
 log "Medusa db:migrate (+ Iran seed scripts)..."
-cd "${MEDUSA_DIR}/apps/backend"
+cd "${MEDUSA_DIR}"
 npx medusa db:migrate
 
 log "Building Medusa..."
-npm run build
-# Prefer built server entry if present
-MEDUSA_START_DIR="${MEDUSA_DIR}/apps/backend"
-if [[ -d "${MEDUSA_DIR}/apps/backend/.medusa/server" ]]; then
-  log "Installing production deps inside .medusa/server (if package.json exists)..."
-  if [[ -f "${MEDUSA_DIR}/apps/backend/.medusa/server/package.json" ]]; then
-    (cd "${MEDUSA_DIR}/apps/backend/.medusa/server" && npm install --omit=dev --no-fund --no-audit || true)
-  fi
+npm run build || log "WARNING: medusa build exited non-zero — checking admin assets..."
+# purpose --- medusa start looks for ./public/admin relative to apps/medusa cwd ---
+mkdir -p public
+if [[ -d .medusa/server/public/admin ]]; then
+  rm -rf public/admin
+  cp -a .medusa/server/public/admin public/admin
 fi
+[[ -f public/admin/index.html ]] || log "WARNING: public/admin/index.html missing after build"
 
 log "Creating publishable API key..."
 PK_OUT="$(npx medusa exec ./src/scripts/create-publishable-key.ts 2>&1 || true)"
@@ -223,6 +225,12 @@ echo "${PUBLISHABLE_KEY}" > /root/backups/medusa-publishable-key.txt
 chmod 600 /root/backups/medusa-publishable-key.txt
 
 NODE_BIN="$(command -v node)"
+MEDUSA_CLI="${APP_DIR}/node_modules/@medusajs/cli/cli.js"
+if [[ ! -f "${MEDUSA_CLI}" ]]; then
+  MEDUSA_CLI="${MEDUSA_DIR}/node_modules/@medusajs/cli/cli.js"
+fi
+[[ -f "${MEDUSA_CLI}" ]] || die "Medusa CLI not found after npm install"
+
 cat > /etc/systemd/system/medusa-api.service <<EOF
 [Unit]
 Description=Mashoodwear Medusa Iran Pack
@@ -232,10 +240,10 @@ Wants=postgresql.service redis-server.service
 [Service]
 Type=simple
 User=root
-WorkingDirectory=${MEDUSA_START_DIR}
+WorkingDirectory=${MEDUSA_DIR}
 EnvironmentFile=${MEDUSA_ENV}
 Environment=NODE_ENV=production
-ExecStart=${NODE_BIN} ./node_modules/@medusajs/cli/cli.js start
+ExecStart=${NODE_BIN} ${MEDUSA_CLI} start
 Restart=on-failure
 RestartSec=8
 LimitNOFILE=65535
@@ -261,34 +269,10 @@ done
 [[ "${ok}" -eq 1 ]] || log "WARNING: Medusa health not confirmed yet — check journalctl -u medusa-api -n 80"
 
 if [[ "${SKIP_UI_CUTOVER}" == "1" ]]; then
-  log "SKIP_UI_CUTOVER=1 — Medusa installed; old UI left untouched."
+  log "SKIP_UI_CUTOVER=1 — Medusa installed from monorepo; CMS/UI systemd skipped."
   log "Done (Medusa only)."
   exit 0
 fi
-
-log "Safety backup of current /opt/mashoodwear before UI cutover..."
-STAMP="$(date +%Y%m%d-%H%M%S)"
-mkdir -p "/root/backups/pre-cutover-${STAMP}"
-if [[ -d "${APP_DIR}" ]]; then
-  tar -C /opt -czf "/root/backups/pre-cutover-${STAMP}/mashoodwear-app.tar.gz" mashoodwear || true
-fi
-mysqldump --single-transaction --routines --triggers "${DB_NAME_CMS}" 2>/dev/null \
-  | gzip > "/root/backups/pre-cutover-${STAMP}/mashoodwear-db.sql.gz" || true
-
-PREV_ENV=""
-if [[ -f "${APP_DIR}/backend/.env" ]]; then
-  PREV_ENV="$(mktemp)"
-  cp -a "${APP_DIR}/backend/.env" "${PREV_ENV}"
-fi
-
-log "Deploying mashoodwear-medusa UI → ${APP_DIR}"
-systemctl stop mashoodwear-api || true
-rm -rf "${APP_DIR}"
-git clone "${UI_REPO_URL}" "${APP_DIR}"
-
-cd "${APP_DIR}"
-npm run install:all --loglevel=info
-npm install jsdom@24.1.3 --prefix backend --save-exact --no-fund --no-audit || true
 
 mkdir -p "${UPLOAD_DIR}"
 chown -R "${SERVICE_USER}:${SERVICE_USER}" "${UPLOAD_DIR}"
@@ -436,6 +420,12 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Host \$host;
         proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+
+    # purpose --- SPA shell must not stick after Medusa cutover (stale Lookbook UI) ---
+    location = /index.html {
+        add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+        add_header Pragma "no-cache" always;
     }
 
     location / {

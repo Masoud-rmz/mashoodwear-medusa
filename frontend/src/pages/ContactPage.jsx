@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getPublicPage } from "../api/adminClient";
 import { useSite } from "../context/SiteContext";
 import StateMessage from "../components/StateMessage";
@@ -12,15 +12,22 @@ export default function ContactPage() {
   const [page, setPage] = useState(null);
   const [error, setError] = useState(false);
 
-  useEffect(() => {
+  const loadPage = useCallback(() => {
+    setError(false);
     getPublicPage("contact")
       .then((response) => {
         if (response.ok) {
           setPage(response.page);
+        } else {
+          setError(true);
         }
       })
       .catch(() => setError(true));
   }, []);
+
+  useEffect(() => {
+    loadPage();
+  }, [loadPage]);
 
   const instagramUrl = checkoutSettings?.instagramDirectUrl;
   const telegramUrl = checkoutSettings?.telegramUsername
@@ -32,7 +39,12 @@ export default function ContactPage() {
       <h1 className="page-title">{page?.title || "Contact"}</h1>
 
       {error && (
-        <StateMessage variant="error" message="Could not load page" actionLabel="Refresh" onAction={() => window.location.reload()} />
+        <StateMessage
+          variant="error"
+          message="Could not load page"
+          actionLabel="Try again"
+          onAction={loadPage}
+        />
       )}
 
       {page && (

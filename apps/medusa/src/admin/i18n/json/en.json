@@ -1,0 +1,85 @@
+{
+
+  "iranPack": {
+
+    "languageSwitcher": {
+
+      "label": "Language",
+
+      "fa": "فارسی",
+
+      "en": "English"
+
+    },
+
+    "currencies": {
+
+      "irr": "Rial",
+
+      "irt": "Toman",
+
+      "irrHint": "Gateway charges in rials — 1 toman = 10 rials"
+
+    },
+
+    "payment": {
+
+      "pending": "Pending payment",
+
+      "paid": "Paid",
+
+      "failed": "Failed",
+
+      "configIncomplete": "Payment gateway is not fully configured"
+
+    },
+
+    "messages": {
+
+      "saved": "Saved",
+
+      "saveFailed": "Could not save — try again",
+
+      "genericError": "Something went wrong — try again"
+
+    }
+
+  },
+
+  "orders": {
+
+    "list": {
+
+      "noRecordsMessage": "No orders yet — orders will appear here."
+
+    }
+
+  },
+
+  "products": {
+
+    "list": {
+
+      "noRecordsMessage": "No products yet — create your first product."
+
+    }
+
+  },
+
+  "loyalty": {
+
+    "menu": {
+
+      "storeCredits": "Store Credits",
+
+      "giftCards": "Gift Cards",
+
+      "giftCardProducts": "Gift Products"
+
+    }
+
+  }
+
+}
+
+

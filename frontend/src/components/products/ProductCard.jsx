@@ -44,7 +44,11 @@ export default function ProductCard({ product, showStockLabel = false }) {
           <PersianText as="p" className="product-name" variant="heading">
             {product.name}
           </PersianText>
-          <p className="product-price">{formatPrice(product.price)}</p>
+          <p className="product-price">
+            {Number(product.priceMax) > Number(product.price) && Number(product.price) > 0
+              ? `از ${formatPrice(product.price)}`
+              : formatPrice(product.price)}
+          </p>
           {showStockLabel && (
             <p className={`card-stock-label ${stockLabelClass(product.stockLabel)}`}>
               {product.stockLabel}

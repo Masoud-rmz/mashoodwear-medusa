@@ -31,7 +31,7 @@ table td code, table th code {
 > **منبع:** `implementation_plan.md`  
 > **پروژه:** `C:\Users\KASRA\Desktop\mashoodwear-medusa`  
 > **اصل دست‌نخورده:** `C:\Users\KASRA\Desktop\mashoodwear`  
-> **Backend:** `F:\medusa-develop\my-medusa-store\apps\backend`  
+> **Backend:** `apps/medusa` (همین monorepo)  
 > **ادمین commerce:** گزینهٔ الف — فقط Medusa Admin (`:9000/app`)؛ داخل `/admin` بازسازی نمی‌شود  
 > **وضعیت:** فاز ۰–۷ انجام شد؛ فاز ۸ جزئی: ۸.۲ OTP، ۸.۴ حساب خریدار، ۸.۴b آدرس ذخیره‌شده (راهنما: `doc/auth-otp.md`)
 
@@ -145,7 +145,7 @@ table td code, table th code {
 - [x] 6.2 در Dashboard / منوی `/admin`: دکمهٔ واضح «مدیریت فروشگاه در Medusa Admin» (محصول، سفارش، موجودی، پرداخت)
 - [x] 6.3 deprecate / مخفی کردن CRUD محصول و دسته در `/admin` (یا صفحهٔ جایگزین با لینک به Medusa) `[first]`
 - [x] 6.4 **نساختن** صفحات سفارش / موجودی / مشتری / پرداخت داخل mashoodwear (خارج از محدودهٔ گزینه الف)
-- [x] 6.5 نگه‌داشتن ادمین CMS: pages، lookbook، site settings روی Express
+- [x] 6.5 نگه‌داشتن ادمین CMS: pages، home، site settings روی Express (collections حذف شد → فقط Medusa)
 - [x] 6.6 مستند `doc/admin-split.md`: Medusa Admin = commerce · `/admin` = CMS برند
 - [x] 6.7 (اختیاری) اسکریپت seed محصولات mashoodwear → Medusa از MySQL اصل یا export JSON
 - [x] 6.8 **Phase complete:** مرز ادمین الف روشن؛ بدون double source of truth برای کاتالوگ

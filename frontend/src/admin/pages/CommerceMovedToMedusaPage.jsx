@@ -10,12 +10,16 @@ const COPY = {
     title: "Categories moved to Medusa Admin",
     body: "Product categories live in Medusa. Use Medusa Admin for category CRUD; this `/cms` panel is CMS-only (pages, home, settings).",
   },
+  collections: {
+    title: "Collections moved to Medusa Admin",
+    body: "Brand collections are managed only in Medusa Admin (including cover image). This CMS no longer edits Express collections — that was a temporary fallback.",
+  },
 };
 
 /**
- * Deprecation stub for Express product/category CRUD (Path A admin).
+ * Deprecation stub for Express product/category/collection CRUD (Path A admin).
  * purpose --- steer merchants to Medusa Admin instead of dual catalog SoT ---
- * @param {{ resource?: "products" | "categories" }} props
+ * @param {{ resource?: "products" | "categories" | "collections" }} props
  */
 export default function CommerceMovedToMedusaPage({ resource = "products" }) {
   const copy = COPY[resource] || COPY.products;

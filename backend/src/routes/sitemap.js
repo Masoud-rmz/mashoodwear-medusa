@@ -26,21 +26,18 @@ router.get("/", async (request, response) => {
     ""
   );
 
+  // purpose --- storefront catalog is Medusa; do not advertise Express MySQL products or retired /lookbook ---
   const staticPaths = [
     "/",
     "/products",
     "/collections",
+    "/categories",
     "/about",
     "/contact",
     "/how-to-buy",
-    "/lookbook",
     "/cart",
     "/checkout",
   ];
-
-  const [products] = await pool.query(
-    `SELECT slug FROM products WHERE status IN ('active', 'out_of_stock') ORDER BY updated_at DESC`
-  );
 
   const [collections] = await pool.query(
     `SELECT slug FROM collections WHERE is_active = TRUE ORDER BY display_order`
@@ -49,7 +46,6 @@ router.get("/", async (request, response) => {
   const urls = [
     ...staticPaths.map((path) => `${siteUrl}${path}`),
     ...collections.map((row) => `${siteUrl}/collections/${row.slug}`),
-    ...products.map((row) => `${siteUrl}/products/${row.slug}`),
   ];
 
   const body = urls

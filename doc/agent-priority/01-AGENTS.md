@@ -39,11 +39,12 @@ Original Mashhoodwear at `C:\Users\KASRA\Desktop\mashoodwear` must stay **untouc
 | `doc/tasks-medusa.md` | Checklist / progress |
 | `doc/implementation_plan.md` | Architecture + scope (Path A + payment + admin الف) |
 | `doc/admin-split.md` | Medusa Admin vs mashoodwear `/admin` |
+| `doc/medusa-admin-merchant-roadmap-fa.md` | نقشهٔ راه فارسی فروشنده: کانال، محصول، موجودی، تخفیف، سفارش |
 | `doc/auth-otp.md` | Buyer OTP + account + saved addresses (C-09) — lives on Medusa, UI in this repo |
 | `doc/storefront-feature-checklist.md` | From-scratch storefront checklist: pages, buttons, keys, tax, promos, auth |
 | `doc/storefront-extras-guide.md` | Agent/playbook for categories, wishlist, gift cards, returns, tax, password reset |
 | `doc/payment-smoke-checklist.md` | Smoke path C-03…C-08 (Iran bank) |
-| `F:\medusa-develop\my-medusa-store\docs\phase-a-iran-pack\storefront-api-contract.md` | Store API contract (C-01…C-09) |
+| `apps/medusa/src/modules/IRAN-PACK.md` + Store API routes under `apps/medusa/src/api/store/` | Store API contract (C-01…C-09) |
 | `C:\Users\KASRA\Desktop\AI learning docs\05-Web-Development\medusa-ui-testbed-then-custom-storefront.md` | Cross-repo learning note |
 
 ## Stack map
@@ -52,12 +53,12 @@ Original Mashhoodwear at `C:\Users\KASRA\Desktop\mashoodwear` must stay **untouc
 |-------|--------|------|
 | Buyer UI (this repo) | `frontend/` Vite + React | `5173` |
 | CMS only (pages, lookbook, settings) | `backend/` Express + MySQL | `3001` |
-| Commerce API + Admin | `F:\medusa-develop\my-medusa-store\apps\backend` | `9000` / `/app` |
+| Commerce API + Admin | `apps/medusa` (این monorepo) | `9000` / `/app` |
 | Publishable key / region | `frontend/.env` | — |
 
 ## Locked decisions
 
-- **Medusa meaning:** always the Iranized backend at `F:\medusa-develop\my-medusa-store\apps\backend` (Iran Pack), not vanilla Medusa Cloud/starter alone.
+- **Medusa meaning:** always the Iranized backend at `apps/medusa` (Iran Pack), not vanilla Medusa Cloud/starter alone.
 - **Path A:** keep Mashhoodwear Vite UI; do not rewrite to Next.js here.
 - **Admin الف:** commerce only in Medusa Admin (`:9000/app`). Do **not** rebuild orders/inventory/payment admin inside Vite `/admin`.
 - **Payment:** Iran Pack `pp_iran-bank_iran` is the main checkout path; DM Instagram/Telegram is optional fallback only.
@@ -83,7 +84,7 @@ Original Mashhoodwear at `C:\Users\KASRA\Desktop\mashoodwear` must stay **untouc
 - `frontend/src/pages/CheckoutPage.jsx` — Iran address + shipping; reuse saved addresses when logged in; DM fallback only
 - `frontend/src/pages/PaymentPage.jsx` — Iran bank pay step (`/checkout/payment`)
 - `frontend/src/pages/OrderResultPage.jsx` — gateway return + paid/failed/pending (`/order/result`)
-- `frontend/src/api/client.js` — facade (`VITE_COMMERCE_PROVIDER=medusa`); CMS fallback for collections
+- `frontend/src/api/client.js` — facade (`VITE_COMMERCE_PROVIDER=medusa`); collections Medusa-only
 - `frontend/src/hooks/useCart.js` — Medusa sync (or localStorage fallback)
 - `frontend/src/admin/AdminApp.jsx` — Path A: products/categories → deprecate stub; CMS routes kept
 - `frontend/src/admin/pages/CommerceMovedToMedusaPage.jsx` — link to Medusa Admin for catalog CRUD
@@ -113,22 +114,19 @@ Original Mashhoodwear at `C:\Users\KASRA\Desktop\mashoodwear` must stay **untouc
 ## Dev smoke
 
 ```bash
-# Reminder (Medusa is outside this repo)
+# Reminder
 npm run notes:medusa
 
-# Medusa
-cd F:\medusa-develop\my-medusa-store\apps\backend
-npm run dev
-
-# This storefront
-cd C:\Users\KASRA\Desktop\mashoodwear-medusa
+# Databases + Medusa + storefront (from repo root)
+npm run db:up
+npm run dev:medusa
 npm run dev:frontend
 # optional CMS:
-npm run db:up && npm run dev:cms-backend
+npm run migrate:cms && npm run dev:cms
 ```
 
 Open `http://localhost:5173/products`, login `/login`, account `/account`, Admin `http://localhost:9000/app`.
 
-Buyer OTP/account guide: [`doc/auth-otp.md`](doc/auth-otp.md) (backend under `my-medusa-store`).
+Buyer OTP/account guide: [`doc/auth-otp.md`](doc/auth-otp.md) (backend under `apps/medusa`).
 
 Default tests: `npm run test:unit`. Residual Express catalog: `npm run test:legacy-express-catalog`.

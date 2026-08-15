@@ -44,7 +44,36 @@ table td code, table th code {
 
 ## Entries
 
+### ۱۴۰۵-۰۵-۱۹ — نقشهٔ راه ادمین فارسی + باگ موجودی وریانت قدیمی
+
+- **علامت:** فروشنده نمی‌دانست ترتیب ساخت کانال/انبار/محصول/تخفیف کجاست؛ روی صفحه Stock برای وریانت‌هایی که بعداً Manage inventory روشن شده، موس ممنوع و سلول `-` است.
+- **علت:** commerce فقط در Medusa Admin است؛ روشن کردن `manage_inventory` روی وریانت موجود Inventory Item نمی‌سازد (باگ Medusa #16199).
+- **رفع:** راهنما `doc/medusa-admin-merchant-roadmap-fa.md`؛ برای وریانت خراب Delete + Create با Manage inventory روشن از اول؛ کد تخفیف از پروموشن‌ها.
+- **قابل‌انتقال:** در UI مشتری بعدی، وریانت را از روز اول با inventory مدیریت‌شده بساز؛ راهنمای فروشنده را جدا از داک توسعه‌دهنده نگه دار.
+
+### ۱۴۰۵-۰۵-۱۸ — قیمت per-variant + سایز/قد/ارتفاع از واریانت + کالکشن فقط Medusa
+
+- **علامت:** (۱) قیمت محصول در PDP ثابت می‌ماند وقتی برای گزینه‌ها قیمت جدا می‌گذارید؛ گاهی `calculated_price` خالی است. (۲) کالکشن هنوز در `/cms` و فال‌بک Express بود. (۳) سایز/قد اشتباه map می‌شد (عنوان سه‌بخشی یا Size+قد بدون title) و ارتفاع فیزیکی فقط از محصول/واریانت اول می‌آمد.
+- **علت:** نمایش فقط `product.price`؛ استخراج قیمت فقط از `calculated_amount`؛ fallback دوگزینه‌ای بدون عنوان همیشه Size+Color فرض می‌کرد؛ CMS collections موقت مانده بود.
+- **رفع:** قیمت انتخاب‌شده روی PDP + fallback `prices[]` + `priceMax`/«از …»؛ mapper با `productOptionKinds` و عنوان `Size / قد / Color`؛ `attributes` روی هر واریانت؛ حذف CRUD/فال‌بک کالکشن از CMS.
+- **قابل‌انتقال:** قیمت و ابعاد را همیشه از واریانت انتخاب‌شده بخوان؛ کالکشن را از روز اول فقط در Medusa نگه دار.
+
+### ۱۴۰۵-۰۵-۱۳ — redeploy ویترین روی VPS + no-cache برای `index.html`
+
+- **علامت:** بعد از Reload هنوز Lookbook / UI قدیمی دیده می‌شد.
+- **علت:** `/opt/mashoodwear/frontend/dist` کهنه بود؛ مرورگر هم `index.html` را cache می‌کرد.
+- **رفع:** sync کد ویترین + `npm run build` روی سرور با `VITE_*` پروداکشن؛ nginx برای HTTP/HTTPS روی `location = /index.html` هدر `Cache-Control: no-cache`؛ اسکریپت `scripts/redeploy-frontend-medusa.sh`.
+- **قابل‌انتقال:** بعد از cutover، فقط git pull کافی نیست — rebuild `dist` و no-cache برای SPA shell لازم است.
+
+### ۱۴۰۵-۰۵-۱۳ — hard reload روی CTA خالی → UI قدیمی (Lookbook / Express)
+
+- **علامت:** از سبد خالی «View Products» (و چند StateMessage دیگر) سایت قبلی با Lookbook و محصولات Express باز می‌شد.
+- **علت:** `window.location.href` / `reload` فول‌ریلود می‌کرد؛ اگر `frontend/dist` روی سرور کهنه باشد یا کش مرورگر index قدیمی بگیرد، UI pre-Medusa لود می‌شود. `/lookbook` هم هنوز در sitemap و بدون ریدایرکت بود.
+- **رفع:** CTAها با `navigate` / retry درون‌SPA؛ ریدایرکت `/lookbook` و `/collection` در App + Vite + Express؛ sitemap بدون lookbook و بدون slugهای MySQL Express.
+- **قابل‌انتقال:** بعد از cutover به Medusa، هر CTA داخلی را با Router ببر نه hard navigation؛ و `dist` را حتماً rebuild/redeploy کن.
+
 ### ۱۴۰۵-۰۵-۰۶ — بستهٔ `doc/ui-medusa-guides` برای ساخت UI روی Medusa
+
 
 - **علامت:** راهنماهای مفید ساخت/سوار کردن ویترین داخل `doc/` پراکنده بودند؛ Agent برای UI بعدی باید چند فایل + قرارداد API بیرون ریپو را جدا پیدا می‌کرد.
 - **علت:** `agent-priority` فقط اولویت ذخیره است؛ checklist / admin-split / payment smoke / API contract آنجا یک‌جا نبود.
@@ -70,7 +99,7 @@ table td code, table th code {
 - **علامت:** ویترین لاگین خریدار نداشت؛ Medusa فقط `emailpass` داشت؛ SMS.ir در Iran Pack نبود.
 - **علت:** OTP عمداً به بعد از ویترین موکول شده بود (C-09 اختیاری).
 - **رفع:** Auth provider `phone-auth` + مسیرهای `/store/iran/auth/*`؛ رمز با `emailpass` و ایمیل مصنوعی `{phone}@phone.local` (فقط سرور)؛ SMS.ir VERIFY یا stub؛ صفحات `/login` و `/account` + `transferCart` پس از لاگین. راهنما: `doc/auth-otp.md`.
-- **قابل‌انتقال:** کلید SMS هرگز در Vite نرود؛ UI فقط شماره ببیند؛ در stub، `debug_otp` فقط غیر production برمی‌گردد؛ `AUTH_CORS` باید origin ویترین را داشته باشد. بک‌اند = `my-medusa-store` نه Express CMS.
+- **قابل‌انتقال:** کلید SMS هرگز در Vite نرود؛ UI فقط شماره ببیند؛ در stub، `debug_otp` فقط غیر production برمی‌گردد؛ `AUTH_CORS` باید origin ویترین را داشته باشد. بک‌اند = `apps/medusa` نه Express CMS.
 
 ### ۱۴۰۵-۰۵-۰۴ — رنگ‌ها: Color روی product بود، روی variant نبود + فیلتر ثابت UI
 
@@ -89,7 +118,7 @@ table td code, table th code {
 ### ۱۴۰۵-۰۵-۰۴ — فاز ۷: Medusa جدا از npm scripts + تست legacy Express
 
 - **علامت:** تازه‌واردها ممکن است `npm run medusa` را در این ریپو جستجو کنند؛ تست‌های `/api/products` Express هم با مسیر Medusa اشتباه گرفته می‌شوند.
-- **علت:** commerce روی `my-medusa-store` است؛ این ریپو فقط Vite + CMS Express دارد. کاتالوگ عمومی دیگر منبع حقیقت Express نیست.
+- **علت:** commerce روی Medusa (`apps/medusa`) است؛ CMS Express فقط برند/صفحات است. کاتالوگ عمومی دیگر منبع حقیقت Express نیست.
 - **رفع:** `npm run notes:medusa`؛ Vite proxy فقط `/api`+`/uploads`(+sitemap)؛ تست‌های کاتالوگ Express در `tests/legacy-express-catalog/` و خارج از `test:unit`.
 - **قابل‌انتقال:** در UI بعدی هم Medusa را خارج از مونوریپو ویترین نگه دارید مگر عمداً workspace مشترک بسازید؛ تست‌های کاتالوگ قدیمی را از CI پیش‌فرض جدا کنید.
 
@@ -211,6 +240,13 @@ table td code, table th code {
 - **علت:** پلاگین `iran-pack-loyalty-i18n` stub اس‌بیلد را با `var` و پارامتر minify‌شده (`key2`) نمی‌شناخت؛ transform دوباره `import { instance as __iranPackI18n }` اضافه می‌کرد.
 - **رفع:** strip/detect برای `var|let|const` stub انعطاف‌پذیر شد؛ قبل از import مشترک stub پاک می‌شود؛ deps فعلی به یک declaration ارتقا یافت.
 - **قابل‌انتقال:** هر Vite plugin که به prebundle تزریق می‌کند باید فرم minify‌شدهٔ esbuild را هم strip کند وگرنه SyntaxError کل Admin را می‌کشد.
+
+### ۱۴۰۵-۰۵-۱۸ — Monorepo: Medusa داخل همین ریپو
+
+- **علامت:** برای کار لوکال باید دو مسیر جدا (`mashoodwear-medusa` + `F:\medusa-develop\...`) نگه داشت؛ clone از GitHub کامل نبود.
+- **علت:** Iran Pack خارج از ریپوی GitHub بود.
+- **رفع:** کپی به `apps/medusa`، npm workspaces، docker-compose (MySQL + Postgres `:5433` + Redis)، اسکریپت‌های `dev:medusa` / `migrate:medusa`، به‌روزرسانی deploy dual-stack.
+- **قابل‌انتقال:** روی ویندوز اگر Postgres محلی `:5432` را گرفته، compose را روی پورت دیگر map کن؛ Redis موجود روی `:6379` را دوباره نساز.
 
 ---
 

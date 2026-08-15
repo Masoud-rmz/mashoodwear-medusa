@@ -23,7 +23,7 @@ export { applyClientSideProductFilters, productHasFeaturedTag } from "./catalogF
 // Expand option.parent so Size/Color titles resolve (not just option values).
 // Use +field so Admin «ویژگی‌ها» scalars are added WITHOUT dropping title/handle.
 const PRODUCT_FIELDS =
-  "*variants,*variants.calculated_price,*variants.options,*variants.options.option,*variants.inventory_quantity,*options,*options.values,*images,*categories,*tags,*collection,+weight,+length,+height,+width,+hs_code,+mid_code,+origin_country";
+  "*variants,*variants.calculated_price,*variants.prices,*variants.options,*variants.options.option,*variants.inventory_quantity,*options,*options.values,*images,*categories,*tags,*collection,+weight,+length,+height,+width,+hs_code,+mid_code,+origin_country,+variants.weight,+variants.length,+variants.height,+variants.width,+variants.hs_code,+variants.mid_code,+variants.origin_country";
 
 /** Max products fetched when size/color/price must be filtered client-side. */
 const CLIENT_FILTER_FETCH_LIMIT = 500;

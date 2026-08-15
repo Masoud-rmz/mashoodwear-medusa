@@ -97,7 +97,7 @@ Bank / stub gateway     ◄── provider Iran Pack (verify فقط روی Medus
 
 | وابستگی | محل |
 |---------|-----|
-| Medusa backend | `F:\medusa-develop\my-medusa-store\apps\backend` |
+| Medusa backend | `apps/medusa` (همین monorepo) |
 | Region ایران + IRT | seed Iran Pack |
 | Provider پرداخت | `pp_iran-bank_iran` |
 | Publishable API Key | Admin یا script sync |

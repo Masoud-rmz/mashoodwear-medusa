@@ -22,10 +22,10 @@
   border-radius: var(--radius-md);
   border: 2px solid transparent;
   cursor: pointer;
-  transition: background var(--duration-fast) var(--ease),
-    transform var(--duration-fast) var(--ease),
-    box-shadow var(--duration-fast) var(--ease),
-    border-color var(--duration-fast) var(--ease);
+  transition: background var(--duration-base) var(--ease),
+    transform var(--duration-base) var(--ease-spring),
+    box-shadow var(--duration-base) var(--ease),
+    border-color var(--duration-base) var(--ease);
 }
 
 .btn:focus-visible {
@@ -40,17 +40,23 @@
 }
 
 .btn-primary {
-  background: var(--color-primary);
+  /* Subtle top sheen over maroon --- adds dimension while keeping the flat brand base --- */
+  background: linear-gradient(180deg, var(--color-accent) 0%, var(--color-primary) 100%);
   color: var(--color-text);
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-button);
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-button), var(--shadow-soft);
 }
 
 .btn-primary:hover {
-  background: var(--color-primary-hover);
-  border-color: var(--color-primary-hover);
+  background: linear-gradient(180deg, var(--color-accent-hover) 0%, var(--color-primary-hover) 100%);
+  border-color: var(--color-accent-hover);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
+  box-shadow: var(--shadow-hover), var(--shadow-glow);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-button);
 }
 
 .btn-secondary {
@@ -60,7 +66,13 @@
 }
 
 .btn-secondary:hover {
-  border-color: var(--color-text);
+  border-color: var(--color-accent);
+  background: var(--color-primary-soft);
+  transform: translateY(-2px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
 }
 
 .icon {
@@ -137,6 +149,7 @@ main,
   background: rgba(0, 0, 0, 0.92);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03), var(--shadow-soft);
 }
 
 .header-inner {
@@ -198,6 +211,7 @@ main,
 }
 
 .nav-links a {
+  position: relative;
   font-size: 14px;
   font-weight: 500;
   text-transform: uppercase;
@@ -206,9 +220,28 @@ main,
   transition: color var(--duration-fast) var(--ease);
 }
 
+/* Animated underline --- grows from the start edge on hover/active for clearer nav feedback --- */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 2px;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-base) var(--ease-spring);
+}
+
 .nav-links a:hover,
 .nav-links a.active {
-  color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+  transform: scaleX(1);
 }
 
 .header-actions {
@@ -230,7 +263,8 @@ main,
 }
 
 .cart-btn:hover {
-  color: var(--color-primary);
+  color: var(--color-accent);
+  background: var(--color-primary-soft);
 }
 
 .cart-btn:focus-visible {

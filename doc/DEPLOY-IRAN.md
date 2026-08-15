@@ -248,6 +248,28 @@ grep ADMIN_SEED /opt/mashoodwear/backend/.env
 
 ## ۸. به‌روزرسانی (redeploy)
 
+### فقط ویترین (رفع UI قدیمی بعد از Reload)
+
+روی سرور:
+
+```bash
+bash /root/redeploy-frontend-medusa.sh
+```
+
+از WSL (با `sshpass`):
+
+```bash
+sed 's/\r$//' scripts/redeploy-frontend-medusa.sh > /tmp/redeploy-frontend-medusa.sh
+sshpass -p '<SSH_PASSWORD>' scp -P 9011 /tmp/redeploy-frontend-medusa.sh root@193.242.208.96:/root/
+# اول کد جدید frontend را هم بفرست (یا git pull روی سرور)، بعد:
+sshpass -p '<SSH_PASSWORD>' ssh -p 9011 root@193.242.208.96 \
+  'bash /root/redeploy-frontend-medusa.sh'
+```
+
+اسکریپت: `frontend/.env` را با publishable key می‌نویسد، `npm run build` می‌زند، برای `index.html` هدر `Cache-Control: no-cache` می‌گذارد، nginx را reload می‌کند.
+
+### به‌روزرسانی کامل‌تر
+
 ```bash
 cd /opt/mashoodwear
 git pull
@@ -300,11 +322,11 @@ tail -f /var/log/nginx/error.log
 
 | فایل | کاربرد |
 |------|--------|
-| `scripts/deploy-dual-stack-iran.sh` | دیپلوی همزمان UI (`mashoodwear-medusa`) + Medusa Iran Pack |
+| `scripts/deploy-dual-stack-iran.sh` | دیپلوی monorepo: UI + CMS + Medusa از `apps/medusa` |
 | `scripts/deploy-production-iran.sh` | دیپلوی فقط Express قدیمی (legacy) |
 | `scripts/restore-mashoodwear-from-backup.sh` | بازگردانی سایت قبلی از بک‌آپ سرور |
 | `scripts/server-prep-medusa-db.sh` | Postgres/Redis + نقش دیتابیس Medusa |
-| `scripts/medusa-api.service.example` | واحد systemd مدوسا |
+| `scripts/medusa-api.service.example` | واحد systemd مدوسا (`/opt/mashoodwear/apps/medusa`) |
 | `scripts/nginx-mashoodwear-medusa.conf.example` | nginx dual-stack |
 | `scripts/install-node20-from-archive.sh` | نصب Node از tarball آپلود شده |
 | `scripts/fix-jsdom-downgrade.sh` | downgrade jsdom و restart API |
@@ -336,32 +358,36 @@ bash /root/restore-mashoodwear-from-backup.sh /root/backups/mashoodwear-20260803
 
 ---
 
-## ۱۱‑ج. جایگزینی با UI جدید (mashoodwear-medusa) — شرط Medusa
+## ۱۱‑ج. Monorepo dual-stack (Medusa داخل همین ریپو)
 
-سایت جدید UI را دارد ولی **کاتالوگ / سبد / چک‌اوت / پرداخت** از Medusa Iran Pack می‌آید (`:9000`).  
-فقط عوض‌کردن `/opt/mashoodwear` با ریپوی `mashoodwear-medusa` بدون نصب Medusa، فروشگاه را می‌شکند.
+سایت کامل از یک clone می‌آید: Vite UI + CMS Express + **Medusa Iran Pack** در `apps/medusa`.
 
 ### دیپلوی dual-stack (روش اصلی)
 
 ```bash
-# 1) آپلود tarball مدوسا به /root/ (اگر ریپوی GitHub مدوسا ندارید)
-# 2) آپلود اسکریپت
+# روی سرور — اسکریپت monorepo را clone می‌کند و apps/medusa را بالا می‌آورد
 bash /root/deploy-dual-stack-iran.sh mashoodwear.ir
 ```
 
-اسکریپت: Postgres/Redis، `/opt/medusa`، migrate+seed، systemd `medusa-api`، سپس cutover به `mashoodwear-medusa` و nginx dual-stack.
+اسکریپت: Postgres/Redis، clone به `/opt/mashoodwear`، migrate+build برای `apps/medusa`، systemd `medusa-api` + `mashoodwear-api`، nginx dual-stack.
 
 | قطعه | مسیر / پورت |
 |------|-------------|
 | Vite UI | `/opt/mashoodwear/frontend/dist` |
 | Brand CMS | UI: `/cms` · API: `/api/` → `:3001` |
-| Medusa | `/store` `/auth` `/admin` `/app` → `:9000` |
-| Rollback | `bash /root/restore-mashoodwear-from-backup.sh /root/backups/mashoodwear-20260803-201145` سپس `systemctl stop medusa-api` |
+| Medusa | `/opt/mashoodwear/apps/medusa` · `/store` `/auth` `/admin` `/app` → `:9000` |
+| Rollback | `bash /root/restore-mashoodwear-from-backup.sh /root/backups/...` سپس `systemctl stop medusa-api` |
 
-فقط Medusa بدون cutover UI:
+فقط Medusa (بدون قطع UI قبلی اگر SKIP):
 
 ```bash
-SKIP_UI_CUTOVER=1 MEDUSA_TARBALL=/root/medusa-iran-pack-backup-XXXX.tar.gz \
+SKIP_UI_CUTOVER=1 bash /root/deploy-dual-stack-iran.sh mashoodwear.ir
+```
+
+Fallback قدیمی (اگر clone بدون `apps/medusa` باشد):
+
+```bash
+MEDUSA_TARBALL=/root/medusa-iran-pack-backup-XXXX.tar.gz \
   bash /root/deploy-dual-stack-iran.sh mashoodwear.ir
 ```
 
@@ -369,8 +395,8 @@ SKIP_UI_CUTOVER=1 MEDUSA_TARBALL=/root/medusa-iran-pack-backup-XXXX.tar.gz \
 
 | قطعه | نقش |
 |------|-----|
-| `mashoodwear-medusa` (Vite + CMS Express) | UI + صفحات برند / lookbook |
-| Medusa Iran Pack (`apps/backend`) | محصولات، سبد، سفارش، پرداخت بانکی ایران |
+| `apps/medusa` (Iran Pack) | محصولات، سبد، سفارش، پرداخت بانکی ایران |
+| `frontend` + `backend` | UI + صفحات برند / lookbook |
 | nginx | UI روی دامنه؛ پروکسی `/api` به Express؛ پروکسی Store/Admin به Medusa |
 
 ---

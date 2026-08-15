@@ -183,21 +183,13 @@ export async function getRelatedProducts(slug, options = {}) {
 }
 
 /**
- * Brand collections: prefer Medusa; fall back to Express CMS when Medusa has none.
- * purpose --- seed catalog has empty collections; keep Drift/Urban Night via CMS until seeded ---
+ * Brand collections — Medusa only (no Express CMS fallback).
+ * purpose --- collections SoT is Medusa Admin; dual CMS source removed ---
  * @returns {Promise<import('../types').CollectionsResponse>}
  */
 export async function getCollections() {
   if (isMedusaCommerceEnabled()) {
-    const medusaResponse = await medusaCatalog.getCollections();
-    if (medusaResponse.items.length > 0) {
-      return medusaResponse;
-    }
-    try {
-      return await fetchJson("/api/collections");
-    } catch {
-      return medusaResponse;
-    }
+    return medusaCatalog.getCollections();
   }
   return fetchJson("/api/collections");
 }
@@ -208,23 +200,7 @@ export async function getCollections() {
  */
 export async function getCollectionBySlug(slug) {
   if (isMedusaCommerceEnabled()) {
-    const medusaResponse = await medusaCatalog.getCollectionBySlug(slug);
-    if (!medusaResponse.notFound) {
-      return medusaResponse;
-    }
-    try {
-      const response = await fetch(`/api/collections/${encodeURIComponent(slug)}`);
-      const body = await response.json();
-      if (response.status === 404) {
-        return { ok: false, notFound: true };
-      }
-      if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`);
-      }
-      return body;
-    } catch {
-      return medusaResponse;
-    }
+    return medusaCatalog.getCollectionBySlug(slug);
   }
 
   const response = await fetch(`/api/collections/${encodeURIComponent(slug)}`);

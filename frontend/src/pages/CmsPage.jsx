@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getPublicPage } from "../api/adminClient";
 import PersianText from "../components/PersianText";
 import StateMessage from "../components/StateMessage";
@@ -9,6 +10,7 @@ import MarkdownContent from "../components/MarkdownContent";
  * @param {{ slug: string, fallbackTitle: string }} props
  */
 export default function CmsPage({ slug, fallbackTitle }) {
+  const navigate = useNavigate();
   const [page, setPage] = useState(null);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState(false);
@@ -32,7 +34,15 @@ export default function CmsPage({ slug, fallbackTitle }) {
   if (notFound) {
     return (
       <div className="container cms-page">
-        <StateMessage variant="empty" message="Page not found" actionLabel="Home" onAction={() => { window.location.href = "/"; }} />
+        <StateMessage
+          variant="empty"
+          message="Page not found"
+          actionLabel="Home"
+          onAction={() => {
+            // purpose --- SPA navigate; avoid hard reload onto stale production dist ---
+            navigate("/");
+          }}
+        />
       </div>
     );
   }

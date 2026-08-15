@@ -86,6 +86,7 @@ table td code, table th code {
 ## اثبات API بدون UI (اختیاری)
 
 ```bash
-cd F:\medusa-develop\my-medusa-store\apps\backend
+cd apps/medusa
+# یا از روت: npm run dev:medusa
 npx medusa exec ./src/scripts/phase-4-smoke.ts
 ```
