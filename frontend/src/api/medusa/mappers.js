@@ -3,6 +3,7 @@
  * purpose --- keep existing React pages stable while commerce data comes from Medusa ---
  */
 import { resolveSizeOnlyFallbackColor } from "../../utils/colorSwatches.js";
+import { resolveMedusaAssetUrl } from "./assetUrl.js";
 
 /** Sentinel when product has no Color option in Medusa. */
 export const DEFAULT_COLOR_SENTINEL = "Default";
@@ -636,7 +637,9 @@ export function mapMedusaProductToItem(product) {
     name: String(product?.title || ""),
     price,
     priceMax,
-    imageUrl: product?.thumbnail || product?.images?.[0]?.url || null,
+    imageUrl: resolveMedusaAssetUrl(
+      product?.thumbnail || product?.images?.[0]?.url || null,
+    ),
     variants,
     totalStock,
     stockLabel: buildStockLabel(totalStock),
@@ -657,7 +660,7 @@ export function mapMedusaProductToItem(product) {
 export function mapMedusaProductToDetail(product) {
   const item = mapMedusaProductToItem(product);
   const images = Array.isArray(product?.images)
-    ? product.images.map((image) => image.url).filter(Boolean)
+    ? product.images.map((image) => resolveMedusaAssetUrl(image.url)).filter(Boolean)
     : [];
   if (item.imageUrl && !images.includes(item.imageUrl)) {
     images.unshift(item.imageUrl);
@@ -747,7 +750,7 @@ export function mapMedusaCollection(collection, productCount = 0) {
     id: String(collection?.id || ""),
     name: String(collection?.title || ""),
     slug: String(collection?.handle || ""),
-    coverImageUrl: coverFromMetadata || collection?.thumbnail || "",
+    coverImageUrl: resolveMedusaAssetUrl(coverFromMetadata || collection?.thumbnail || "") || "",
     description: String(metadata.description || ""),
     productCount,
   };

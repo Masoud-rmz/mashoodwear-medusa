@@ -220,6 +220,18 @@ describe("mapMedusaProduct color facets", () => {
 });
 
 describe("mapMedusaVariant + product item", () => {
+  it("prefixes root-relative Medusa file URLs with the backend origin", () => {
+    const item = mapMedusaProductToItem({
+      id: "prod_img",
+      title: "Local file",
+      handle: "local-file",
+      thumbnail: "/static/tee.jpg",
+      images: [{ url: "/static/tee.jpg" }],
+      variants: [],
+    });
+    assert.equal(item.imageUrl, "http://localhost:9000/static/tee.jpg");
+  });
+
   const sampleProduct = {
     id: "prod_1",
     title: "Demo Tee",

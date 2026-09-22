@@ -29,6 +29,10 @@ const iranAdminCurrenciesPath = path.resolve(
 module.exports = defineConfig({
   admin: {
     vite: () => ({
+      server: {
+        // purpose --- admin dev server rejects the public Host unless it is listed ---
+        allowedHosts: ["mashoodwear.ir", "www.mashoodwear.ir"],
+      },
       plugins: [iranPackCurrenciesPlugin(), iranPackLoyaltyI18nPlugin()],
       resolve: {
         alias: [

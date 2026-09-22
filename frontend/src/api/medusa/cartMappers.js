@@ -2,6 +2,7 @@
  * Map Medusa cart payloads to Mashhoodwear CartLineItem shapes.
  * purpose --- keep Cart/Checkout UI stable while line items come from Store Cart API ---
  */
+import { resolveMedusaAssetUrl } from "./assetUrl.js";
 
 /**
  * Read size/color from cart line variant option values or title.
@@ -113,7 +114,7 @@ export function mapMedusaCartLineItem(item) {
     name: String(item?.product_title || item?.product?.title || item?.title || ""),
     price: extractCartLineUnitPrice(item),
     slug: String(item?.product_handle || item?.product?.handle || ""),
-    imageUrl: item?.thumbnail || item?.product?.thumbnail || null,
+    imageUrl: resolveMedusaAssetUrl(item?.thumbnail || item?.product?.thumbnail || null),
     variantId: item?.variant_id
       ? String(item.variant_id)
       : item?.variant?.id
