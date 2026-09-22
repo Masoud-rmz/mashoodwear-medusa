@@ -3,6 +3,7 @@
  */
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { resolveMedusaAssetUrl } from "../../frontend/src/api/medusa/assetUrl.js";
 import {
   buildStockLabel,
   extractProductAttributes,
@@ -230,6 +231,16 @@ describe("mapMedusaVariant + product item", () => {
       variants: [],
     });
     assert.equal(item.imageUrl, "http://localhost:9000/static/tee.jpg");
+  });
+
+  it("rewrites loopback Medusa file URLs onto the public storefront origin", () => {
+    assert.equal(
+      resolveMedusaAssetUrl(
+        "http://localhost:9000/static/tee.jpg",
+        "https://mashoodwear.ir",
+      ),
+      "https://mashoodwear.ir/static/tee.jpg",
+    );
   });
 
   const sampleProduct = {
